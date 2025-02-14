@@ -11,31 +11,29 @@ using UnityEngine.Events;
 
 public class CharacterCreationUI : MonoBehaviour
 {
+    [SerializeField] private int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
+    [SerializeField] private List<Sprite> headImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> legImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
 
-    public Button headForward, headBackward, 
-        chestForward, chestBackward, 
-        legForward, legBackward, 
+    public Button headForward, headBackward,
+        chestForward, chestBackward,
+        legForward, legBackward,
         feetForward, feetBackward;
-
-    private List<List<Sprite>> imageListList = new List<List<Sprite>>();
     public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-    private List<Sprite> headImages = new List<Sprite>();
-    private List<Sprite> chestImages = new List<Sprite>();
-    private List<Sprite> legImages = new List<Sprite>();
-    private List<Sprite> feetImages = new List<Sprite>();
 
-    [SerializeField] private int headIndex = 0, chestIndex = 0, legIndex = 0, feetIndex = 0;
-
+    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
 
 
     private void Awake()
     {
         #region Fill list
-        imageListList.Add(headImages);
-        imageListList.Add(chestImages);
-        imageListList.Add(legImages);
-        imageListList.Add(feetImages);
+        imageCategoryList.Add(headImages);
+        imageCategoryList.Add(chestImages);
+        imageCategoryList.Add(legImages);
+        imageCategoryList.Add(feetImages);
         #endregion
 
         loader = GetComponent<ImageLoader>();
@@ -68,18 +66,41 @@ public class CharacterCreationUI : MonoBehaviour
         #endregion
     }
 
+    private void Start()
+    {
+        #region SetImagesAtStart
+        if (headImages.Count > 0)
+            SetImage(headDisplay, headImages, headIndex);
+        if (chestImages.Count > 0)
+            SetImage(chestDisplay, chestImages, chestIndex);
+        if (legImages.Count > 0)
+            SetImage(legDisplay, legImages, legIndex);
+        if (feetImages.Count > 0)
+            SetImage(feetDisplay, feetImages, feetIndex);
+        #endregion
+    }
+
     public void UpdateList()
     {
-
-        for (int i = 0; i < imageListList.Count; i++)
+        for (int i = 0; i < imageCategoryList.Count; i++)
         {
             foreach (var image in loader.imageCategories[i].imageList)
             {
-                imageListList[i].Add(image);
+                if (loader.imageCategories[i].imageList.Count == 0)
+                {
+                    Debug.Log("Image folder empty");
+                    return;
+                }
+
+                List<Sprite> listToCopyTo = imageCategoryList[i];
+                if (!listToCopyTo.Contains(image))
+                {
+                    listToCopyTo.Add(image);
+                    Debug.Log($"Copied{image.name} to {listToCopyTo}");
+                }
+                Debug.Log("Lists updated");
             }
         }
-
-        Debug.Log("Lists updated");
     }
 
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, int index)
@@ -88,51 +109,56 @@ public class CharacterCreationUI : MonoBehaviour
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
 
+    private void CycleThroughImage(VisualElement visElement, List<Sprite> spriteList, ref int index, bool forward)
+    {
+        if (forward == true) index++;
+        else if (forward == false) index--;
+        if (index < 0)
+            index = spriteList.Count - 1;
+        else if (index >= spriteList.Count)
+            index = 0;
+        SetImage(visElement, spriteList, index);
+    }
+
+    #region Buttons
     private void headForwardClicked()
     {
-        SetImage(headDisplay, headImages, headIndex);
-        headIndex++;
+        CycleThroughImage(headDisplay, headImages, ref headIndex, true);
     }
 
     private void headBackwardClicked()
     {
-        SetImage(headDisplay, headImages, headIndex);
-        headIndex--;
+        CycleThroughImage(headDisplay, headImages, ref headIndex, false);
     }
 
     private void chestForwardClicked()
     {
-        SetImage(chestDisplay, chestImages, chestIndex);
-        chestIndex++;
+        CycleThroughImage(chestDisplay, chestImages, ref chestIndex, true);
     }
 
     private void chestBackwardClicked()
     {
-        SetImage(chestDisplay, chestImages, chestIndex);
-        chestIndex--;
+        CycleThroughImage(chestDisplay, chestImages, ref chestIndex, false);
     }
 
     private void legForwardClicked()
     {
-        SetImage(legDisplay, legImages, legIndex);
-        legIndex++;
+        CycleThroughImage(legDisplay, legImages, ref legIndex, true);
     }
 
     private void legBackwardClicked()
     {
-        SetImage(legDisplay, legImages, legIndex);
-        legIndex--;
+        CycleThroughImage(legDisplay, legImages, ref legIndex, false);
     }
 
     private void feetForwardClicked()
     {
-        SetImage(feetDisplay, feetImages, feetIndex);
-        feetIndex++;
+        CycleThroughImage(feetDisplay, feetImages, ref feetIndex, true);
     }
 
     private void feetBackwardClicked()
     {
-        SetImage(feetDisplay, feetImages, feetIndex);
-        feetIndex--;
+        CycleThroughImage(feetDisplay, feetImages, ref feetIndex, false);
     }
+    #endregion
 }

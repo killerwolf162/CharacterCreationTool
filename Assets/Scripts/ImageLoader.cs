@@ -29,7 +29,7 @@ public class ImageLoader : MonoBehaviour
 
     public UnityEvent onImageLoaded = new UnityEvent();
 
-    void Start()
+    void Awake()
     {
         foreach (var category in imageCategories)
         {
@@ -128,63 +128,5 @@ public class ImageLoader : MonoBehaviour
 
         Debug.Log($"Loaded {category.imageList.Count} images from {category.folderName}");
         onImageLoaded.Invoke();
-    }
-
-    public List<Sprite> GetImageListByCategory(string categoryName)
-    {
-        var category = imageCategories.FirstOrDefault(c => c.folderName == categoryName);
-        return category?.imageList ?? new List<Sprite>();
-    }
-
-    public Sprite GetImageByName(string categoryName, string imageName)
-    {
-        var imageList = GetImageListByCategory(categoryName);
-        return imageList.FirstOrDefault(sprite => sprite.name == imageName);
-    }
-
-    public void AddCategory(string categoryName, bool autoReload = false)
-    {
-        if (!imageCategories.Any(c => c.folderName == categoryName))
-        {
-            ImageCategory newCategory = new ImageCategory
-            {
-                folderName = categoryName,
-                autoReload = autoReload
-            };
-
-            string fullPath = Path.Combine(Application.persistentDataPath, categoryName);
-            if (!Directory.Exists(fullPath))
-            {
-                Directory.CreateDirectory(fullPath);
-            }
-
-            imageCategories.Add(newCategory);
-            lastCheckTimes[categoryName] = System.DateTime.Now;
-            LoadImagesForCategory(newCategory);
-        }
-    }
-
-    public void RemoveCategory(string categoryName)
-    {
-        var category = imageCategories.FirstOrDefault(c => c.folderName == categoryName);
-        if (category != null)
-        {
-            imageCategories.Remove(category);
-            lastCheckTimes.Remove(categoryName);
-        }
-    }
-
-    public string GetCategoryPath(string categoryName)
-    {
-        return Path.Combine(Application.persistentDataPath, categoryName);
-    }
-
-    public void ReloadCategory(string categoryName)
-    {
-        var category = imageCategories.FirstOrDefault(c => c.folderName == categoryName);
-        if (category != null)
-        {
-            LoadImagesForCategory(category);
-        }
     }
 }
