@@ -11,21 +11,19 @@ using UnityEngine.Events;
 
 public class CharacterCreationUI : MonoBehaviour
 {
+    [SerializeField] private int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
+    [SerializeField] private List<Sprite> headImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> legImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
 
     public Button headForward, headBackward, 
         chestForward, chestBackward, 
         legForward, legBackward, 
         feetForward, feetBackward;
+    public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
 
     private List<List<Sprite>> imageListList = new List<List<Sprite>>();
-    public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-    private List<Sprite> headImages = new List<Sprite>();
-    private List<Sprite> chestImages = new List<Sprite>();
-    private List<Sprite> legImages = new List<Sprite>();
-    private List<Sprite> feetImages = new List<Sprite>();
-
-    [SerializeField] private int headIndex = 0, chestIndex = 0, legIndex = 0, feetIndex = 0;
-
     private ImageLoader loader;
 
 
@@ -81,61 +79,57 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log("Lists updated");
     }
 
-    private void SetImage(VisualElement visElement, List<Sprite> spriteList, int index)
+    private void SetImage(VisualElement visElement, List<Sprite> spriteList, ref int index, bool forward)
     {
+        if (forward == true) index++;           // spritelist count higher than actual amount of images inside the list(?!) 
+        else if (forward == false) index--;     // for now it cycles like I want it to, so no priority to figure out why
+
+        if (index < 0)
+            index = spriteList.Count -1;
+        else if (index >= spriteList.Count) 
+            index = 0;
+
         var texture = spriteList[index];
-        visElement.style.backgroundImage = new StyleBackground(texture);
+        visElement.style.backgroundImage = new StyleBackground(texture);    
     }
 
     private void headForwardClicked()
     {
-        headIndex++;
-        if (headIndex > headImages.Count)
-            headIndex = 0;
-        if (headIndex < 0)
-            headIndex = headImages.Count;
-        SetImage(headDisplay, headImages, headIndex); 
+        SetImage(headDisplay, headImages, ref headIndex, true); 
     }
 
     private void headBackwardClicked()
     {
-        headIndex--;
-        SetImage(headDisplay, headImages, headIndex);     
+        SetImage(headDisplay, headImages, ref headIndex, false);     
     }
 
     private void chestForwardClicked()
     {
-        SetImage(chestDisplay, chestImages, chestIndex);
-        chestIndex++;
+        SetImage(chestDisplay, chestImages, ref chestIndex, true);
     }
 
     private void chestBackwardClicked()
     {
-        SetImage(chestDisplay, chestImages, chestIndex);
-        chestIndex--;
+        SetImage(chestDisplay, chestImages, ref chestIndex, false);
     }
 
     private void legForwardClicked()
     {
-        SetImage(legDisplay, legImages, legIndex);
-        legIndex++;
+        SetImage(legDisplay, legImages, ref legIndex, true);
     }
 
     private void legBackwardClicked()
     {
-        SetImage(legDisplay, legImages, legIndex);
-        legIndex--;
+        SetImage(legDisplay, legImages, ref legIndex, false);
     }
 
     private void feetForwardClicked()
     {
-        SetImage(feetDisplay, feetImages, feetIndex);
-        feetIndex++;
+        SetImage(feetDisplay, feetImages, ref feetIndex, true);
     }
 
     private void feetBackwardClicked()
     {
-        SetImage(feetDisplay, feetImages, feetIndex);
-        feetIndex--;
+        SetImage(feetDisplay, feetImages, ref feetIndex, false);
     }
 }
