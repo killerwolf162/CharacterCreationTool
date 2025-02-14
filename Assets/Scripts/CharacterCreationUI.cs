@@ -70,7 +70,6 @@ public class CharacterCreationUI : MonoBehaviour
 
     public void UpdateList()
     {
-
         for (int i = 0; i < imageListList.Count; i++)
         {
             foreach (var image in loader.imageCategories[i].imageList)
@@ -90,14 +89,18 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void headForwardClicked()
     {
-        SetImage(headDisplay, headImages, headIndex);
         headIndex++;
+        if (headIndex > headImages.Count)
+            headIndex = 0;
+        if (headIndex < 0)
+            headIndex = headImages.Count;
+        SetImage(headDisplay, headImages, headIndex); 
     }
 
     private void headBackwardClicked()
     {
-        SetImage(headDisplay, headImages, headIndex);
         headIndex--;
+        SetImage(headDisplay, headImages, headIndex);     
     }
 
     private void chestForwardClicked()
