@@ -9,6 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Xml.Serialization;
 using System;
 using System.Linq;
+using UnityEngine.Events;
 
 public class ImageLoader : MonoBehaviour
 {
@@ -22,8 +23,11 @@ public class ImageLoader : MonoBehaviour
 
     public List<ImageCategory> imageCategories = new List<ImageCategory>();
     private Dictionary<string, System.DateTime> lastCheckTimes = new Dictionary<string, System.DateTime>();
-    private float autoReloadInterval = 5f;
+    private float autoReloadInterval = 1f;
     private readonly string[] supportedFormats = { "*.png", "*.jpg", "*.jpeg" };
+
+
+    public UnityEvent onImageLoaded = new UnityEvent();
 
     void Start()
     {
@@ -60,6 +64,7 @@ public class ImageLoader : MonoBehaviour
         {
             LoadImagesForCategory(category);
         }
+        onImageLoaded.Invoke();
     }
 
     private void LoadImagesForCategory(ImageCategory category)
@@ -122,6 +127,7 @@ public class ImageLoader : MonoBehaviour
         }
 
         Debug.Log($"Loaded {category.imageList.Count} images from {category.folderName}");
+        onImageLoaded.Invoke();
     }
 
     public List<Sprite> GetImageListByCategory(string categoryName)

@@ -23,7 +23,7 @@
         </ui:GroupBox>
     </ui:VisualElement>
     <ui:VisualElement name="CharacterView" style="flex-grow: 1; align-items: auto; left: 50%; height: 1080px; width: 50%; top: 0; transform-origin: right top; position: absolute;">
-        <ui:VisualElement name="headdisplay" class="imagedisplays" style="left: 300px;" />
+        <ui:VisualElement name="headdisplay" class="imagedisplays" style="left: 300px; background-image: none;" />
         <ui:VisualElement name="chestdisplay" class="imagedisplays" style="flex-grow: 1; left: 250px; top: 200px; width: 300px; height: 300px;" />
         <ui:VisualElement name="legdisplay" class="imagedisplays" style="flex-grow: 1; height: 300px; left: 300px; top: 500px;" />
         <ui:VisualElement name="feetdisplay" class="imagedisplays" style="flex-grow: 1; height: 100px; left: 300px; top: 800px;" />
