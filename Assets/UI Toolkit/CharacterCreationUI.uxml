@@ -1,0 +1,31 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI%20Toolkit/CharacterCreationStyle.uss?fileID=7433441132597879392&amp;guid=316df77569964bc4889ee3efc9164ca3&amp;type=3#CharacterCreationStyle" />
+    <ui:VisualElement name="ButtonUI" style="flex-grow: 1; width: 50%; height: 1080px; bottom: 0; align-items: stretch; transform-origin: left top; position: absolute; left: 0; top: 0; right: 0;">
+        <ui:GroupBox name="HeadButtons" style="transform-origin: left top; position: absolute; left: 0; top: 150px; right: 0; bottom: 0; width: 300px; height: 50px;">
+            <ui:Label tabindex="-1" text="Heads" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Heads" class="buttontext" style="background-image: none; width: 300px; height: 50px; position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; background-color: rgb(0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="headforward" class="button buttonforward" style="left: 200px; position: absolute; top: 0; right: 0; bottom: 0; -unity-text-outline-color: rgba(0, 0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="headback" class="button buttonbackward" style="top: 0; position: absolute; left: 0; right: 0; opacity: 1; bottom: 0;" />
+        </ui:GroupBox>
+        <ui:GroupBox name="ChestButtons" style="transform-origin: left top; position: absolute; left: 0; top: 250px; right: 0; bottom: 0; width: 300px; height: 50px;">
+            <ui:Label tabindex="-1" text="Chests" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Chests" class="buttontext" style="background-image: none; width: 300px; height: 50px; position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; background-color: rgb(0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="chestforward" class="button buttonforward" style="left: 200px; position: absolute; top: 0; right: 0; bottom: 0; -unity-text-outline-color: rgba(0, 0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="chestback" class="button buttonbackward" style="top: 0; position: absolute; left: 0; right: 0; opacity: 1; bottom: 0;" />
+        </ui:GroupBox>
+        <ui:GroupBox name="LegButtons" style="transform-origin: left top; position: absolute; left: 0; top: 350px; right: 0; bottom: 0; width: 300px; height: 50px;">
+            <ui:Label tabindex="-1" text="Legs" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Legs" class="buttontext" style="background-image: none; width: 300px; height: 50px; position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; background-color: rgb(0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="legsforward" class="button buttonforward" style="left: 200px; position: absolute; top: 0; right: 0; bottom: 0; -unity-text-outline-color: rgba(0, 0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="legsback" class="button buttonbackward" style="top: 0; position: absolute; left: 0; right: 0; opacity: 1; bottom: 0;" />
+        </ui:GroupBox>
+        <ui:GroupBox name="FeetButtons" style="transform-origin: left top; position: absolute; left: 0; top: 450px; right: 0; bottom: 0; width: 300px; height: 50px;">
+            <ui:Label tabindex="-1" text="Feets" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Feets" class="buttontext" style="background-image: none; width: 300px; height: 50px; position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; background-color: rgb(0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="feetforward" class="button buttonforward" style="left: 200px; position: absolute; top: 0; right: 0; bottom: 0; -unity-text-outline-color: rgba(0, 0, 0, 0);" />
+            <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="feetback" class="button buttonbackward" style="top: 0; position: absolute; left: 0; right: 0; opacity: 1; bottom: 0;" />
+        </ui:GroupBox>
+    </ui:VisualElement>
+    <ui:VisualElement name="CharacterView" style="flex-grow: 1; align-items: auto; left: 50%; height: 1080px; width: 50%; top: 0; transform-origin: right top; position: absolute;">
+        <ui:VisualElement name="headdisplay" class="imagedisplays" style="left: 300px;" />
+        <ui:VisualElement name="chestdisplay" class="imagedisplays" style="flex-grow: 1; left: 250px; top: 200px; width: 300px; height: 300px;" />
+        <ui:VisualElement name="legdisplay" class="imagedisplays" style="flex-grow: 1; height: 300px; left: 300px; top: 500px;" />
+        <ui:VisualElement name="feetdisplay" class="imagedisplays" style="flex-grow: 1; height: 100px; left: 300px; top: 800px;" />
+    </ui:VisualElement>
+</ui:UXML>

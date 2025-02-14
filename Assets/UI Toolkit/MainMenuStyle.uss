@@ -17,6 +17,24 @@
     margin-bottom: 0;
     margin-left: 0;
     translate: -450px 0;
+    color: rgb(0, 0, 0);
+    background-color: rgb(255, 255, 255);
+}
+
+.button:hover {
+    -unity-text-outline-color: rgba(0, 0, 0, 0);
+    color: rgb(255, 255, 255);
+    transition-duration: 0.25s;
+    align-self: center;
+    font-size: 24px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    translate: -450px 0;
+    background-color: rgb(0, 0, 0);
+    transition-timing-function: ease-in;
+    transition-delay: 0.1s;
 }
 
 .values {
@@ -24,4 +42,13 @@
     height: 50px;
     font-size: 20px;
     translate: 500px -210px;
+    color: rgb(0, 0, 0);
+}
+
+.values:focus {
+    color: rgb(0, 0, 0);
+    font-size: 24px;
+}
+
+.head {
 }

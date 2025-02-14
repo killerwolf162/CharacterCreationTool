@@ -1,0 +1,38 @@
+.button {
+    transform-origin: left top;
+    width: 100px;
+    height: 50px;
+    -unity-background-image-tint-color: rgb(132, 132, 132);
+    font-size: 0;
+    background-color: rgba(0, 0, 0, 0);
+    border-left-color: rgba(0, 0, 0, 0);
+    border-right-color: rgba(0, 0, 0, 0);
+    border-top-color: rgba(0, 0, 0, 0);
+    border-bottom-color: rgba(0, 0, 0, 0);
+}
+
+.button:hover {
+}
+
+.buttonforward {
+    background-image: url("project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=-1087164816274819069&guid=7f854780c3acb1540aef523cf2d27192&type=3#arrow-right@2x");
+}
+
+.buttonbackward {
+    background-image: url("project://database/Assets/UI%20Toolkit/UnityThemes/UnityDefaultRuntimeTheme.tss?fileID=-2236324273849735119&guid=7f854780c3acb1540aef523cf2d27192&type=3#arrow-left@2x");
+}
+
+.buttontext {
+    position: absolute;
+    color: rgb(133, 133, 133);
+}
+
+.imagedisplays {
+    width: 200px;
+    height: 200px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
