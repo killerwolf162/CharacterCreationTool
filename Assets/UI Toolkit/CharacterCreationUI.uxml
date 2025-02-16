@@ -21,6 +21,10 @@
             <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="feetforward" class="button buttonforward" style="left: 200px; position: absolute; top: 0; right: 0; bottom: 0; -unity-text-outline-color: rgba(0, 0, 0, 0);" />
             <ui:Button text="Button" parse-escape-sequences="true" display-tooltip-when-elided="true" name="feetbackward" class="button buttonbackward" style="top: 0; position: absolute; left: 0; right: 0; opacity: 1; bottom: 0;" />
         </ui:GroupBox>
+        <ui:GroupBox name="ExportButton" style="transform-origin: left top; position: absolute; left: 0; top: 550px; right: 0; bottom: 0; width: 300px; height: 50px;">
+            <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExportBackground" style="background-image: none; width: 300px; height: 50px; position: absolute; left: 0; top: 0; right: 0; bottom: 0; -unity-text-align: middle-center; background-color: rgb(0, 0, 0);" />
+            <ui:Button text="Export" parse-escape-sequences="true" display-tooltip-when-elided="true" name="exportbutton" enable-rich-text="false" style="width: 250px; height: 40px; background-color: rgb(132, 132, 132); position: relative; left: 20px; top: 2px; right: 0; bottom: 0; -unity-background-image-tint-color: rgb(0, 0, 0);" />
+        </ui:GroupBox>
     </ui:VisualElement>
     <ui:VisualElement name="CharacterView" style="flex-grow: 1; align-items: auto; left: 50%; height: 100%; width: 50%; top: 0; transform-origin: right top; position: absolute;">
         <ui:VisualElement name="headdisplay" class="imagedisplays" style="left: 300px; background-image: none; width: 150px; height: 150px;" />

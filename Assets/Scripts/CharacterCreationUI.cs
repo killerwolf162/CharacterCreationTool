@@ -21,10 +21,14 @@ public class CharacterCreationUI : MonoBehaviour
         chestForward, chestBackward,
         legForward, legBackward,
         feetForward, feetBackward;
+
+    public Button exportButton;
+
     public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
 
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
+    private ImageExporter exporter;
 
 
     private void Awake()
@@ -36,8 +40,11 @@ public class CharacterCreationUI : MonoBehaviour
         imageCategoryList.Add(feetImages);
         #endregion
 
+        #region Load&Export
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
+        exporter = GetComponent<ImageExporter>();
+        #endregion
 
         #region UI Init
         var root = GetComponent<UIDocument>().rootVisualElement;
@@ -49,6 +56,7 @@ public class CharacterCreationUI : MonoBehaviour
         legBackward = root.Q<Button>("legsbackward");
         feetForward = root.Q<Button>("feetforward");
         feetBackward = root.Q<Button>("feetbackward");
+        exportButton = root.Q<Button>("exportbutton");
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
@@ -63,6 +71,7 @@ public class CharacterCreationUI : MonoBehaviour
         legBackward.clicked += legBackwardClicked;
         feetForward.clicked += feetForwardClicked;
         feetBackward.clicked += feetBackwardClicked;
+        exportButton.clicked += exportButtonClicked;
         #endregion
     }
 
@@ -120,7 +129,7 @@ public class CharacterCreationUI : MonoBehaviour
         SetImage(visElement, spriteList, index);
     }
 
-    #region Buttons
+    #region ButtonActions
     private void headForwardClicked()
     {
         CycleThroughImage(headDisplay, headImages, ref headIndex, true);
@@ -160,5 +169,12 @@ public class CharacterCreationUI : MonoBehaviour
     {
         CycleThroughImage(feetDisplay, feetImages, ref feetIndex, false);
     }
+
+    private void exportButtonClicked()
+    {
+        exporter.textureToExport = headImages[1].texture;
+        exporter.ExportImage();
+    }
+
     #endregion
 }

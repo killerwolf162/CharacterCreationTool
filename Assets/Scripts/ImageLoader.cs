@@ -37,7 +37,6 @@ public class ImageLoader : MonoBehaviour
             if (!Directory.Exists(fullPath))
             {
                 Directory.CreateDirectory(fullPath);
-                Debug.Log($"Created directory: {fullPath}");
             }
             lastCheckTimes[category.folderName] = System.DateTime.Now;
         }
