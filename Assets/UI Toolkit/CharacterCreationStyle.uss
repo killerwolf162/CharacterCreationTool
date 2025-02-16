@@ -12,6 +12,10 @@
 }
 
 .button:hover {
+    font-size: 0;
+    -unity-background-image-tint-color: rgb(48, 48, 48);
+    transition-duration: 0.15s;
+    transition-delay: 0.05s;
 }
 
 .buttonforward {
@@ -35,4 +39,12 @@
     top: 0;
     right: 0;
     bottom: 0;
+}
+
+.actionbuttons {
+    background-color: rgba(132, 132, 132, 0);
+}
+
+.actionbuttons:hover {
+    background-color: rgb(48, 48, 48);
 }
