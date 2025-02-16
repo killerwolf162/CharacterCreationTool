@@ -24,6 +24,8 @@ public class CharacterCreationUI : MonoBehaviour
 
     public Button exportButton;
 
+    public TextField fileName;
+
     public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
 
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
@@ -62,6 +64,8 @@ public class CharacterCreationUI : MonoBehaviour
         chestDisplay = root.Q<VisualElement>("chestdisplay");
         legDisplay = root.Q<VisualElement>("legdisplay");
         feetDisplay = root.Q<VisualElement>("feetdisplay");
+
+        fileName = root.Q<TextField>("filename");
 
         headForward.clicked += headForwardClicked;
         headBackward.clicked += headBackwardClicked;
@@ -172,8 +176,10 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void exportButtonClicked()
     {
+        string _fileName = fileName.value;
+
         exporter.textureToExport = headImages[1].texture;
-        exporter.ExportImage();
+        exporter.ExportImage(_fileName);
     }
 
     #endregion

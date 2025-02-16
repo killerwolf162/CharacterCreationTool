@@ -5,8 +5,9 @@ public class ImageExporter : MonoBehaviour
 {
     public Texture2D textureToExport;
 
-    public void ExportImage(string fileName = "testExport.png")
+    public void ExportImage(string fileName)
     {
+        fileName = fileName + ".png";
         if (textureToExport == null)
         {
             Debug.LogError("No texture assigned to export!");
