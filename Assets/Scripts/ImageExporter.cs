@@ -3,9 +3,7 @@ using System.IO;
 
 public class ImageExporter : MonoBehaviour
 {
-    public Texture2D textureToExport;
-
-    public void ExportImage(string fileName)
+    public void ExportImage(string fileName, Texture2D textureToExport)
     {
         fileName = fileName + ".png";
         if (textureToExport == null)
