@@ -9,26 +9,6 @@ using UnityEngine.UIElements;
 using System.Xml.Serialization;
 using UnityEngine.Events;
 
-[System.Serializable]
-public class ImagePreset
-{
-    public string name;
-    public int headIndex;
-    public int chestIndex;
-    public int legIndex;
-    public int feetIndex;
-
-    public ImagePreset(string name, int headIndex, int chestIndex, int legIndex, int feetIndex)
-    {
-        this.name = name;
-        this.headIndex = headIndex;
-        this.chestIndex = chestIndex;
-        this.legIndex = legIndex;
-        this.feetIndex = feetIndex;
-    }
-
-}
-
 public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
@@ -62,10 +42,11 @@ public class CharacterCreationUI : MonoBehaviour
         imageCategoryList.Add(feetImages);
         #endregion
 
-        #region Load&Export
+        #region Load&Save&Export
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
         exporter = GetComponent<ImageExporter>();
+        saver = GetComponent<ImageSaver>();
         #endregion
 
         #region UI Init
@@ -217,7 +198,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void saveButtonClicked()
     {
-        saver.SaveImagePreset(fileName.value, headIndex, chestIndex, legIndex, feetIndex);
+        saver.SaveImagePreset(this);
     }
     #endregion
 }

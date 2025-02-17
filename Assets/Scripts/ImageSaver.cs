@@ -5,17 +5,36 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
+[System.Serializable]
+public class ImagePreset
+{
+    public string name;
+    public int headIndex;
+    public int chestIndex;
+    public int legIndex;
+    public int feetIndex;
+
+    public ImagePreset()
+    {
+    }
+}
+
 public class ImageSaver : MonoBehaviour
 {
 
     private XmlSerializer xmlSerializer;
     private ImagePreset preset;
 
-    public void SaveImagePreset(string fileName, int headIndex, int chestIndex, int legIndex, int feetIndex)
+    private void Start()
     {
-        preset = new ImagePreset(fileName, headIndex, chestIndex, legIndex, feetIndex);
+        xmlSerializer = new XmlSerializer(typeof(ImagePreset));
+    }
+
+    public void SaveImagePreset(CharacterCreationUI UI)
+    {
         FileStream fileStream = null;
-        
+        ApplyChanges(UI);
+
         try
         {
             string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
@@ -25,18 +44,32 @@ public class ImageSaver : MonoBehaviour
                 Directory.CreateDirectory(directoryPath);
             }
 
-            string filePath = Path.Combine(directoryPath, fileName);
+            string filePath = Path.Combine(directoryPath, preset.name + ".xml");
             fileStream = File.Create(filePath);
             xmlSerializer.Serialize(fileStream, preset);
             fileStream.Flush();
+            Debug.Log($"Image exported successfully to: {filePath}");
         }
         catch (System.Exception e)
         {
-            Debug.LogError(e.Message, gameObject);
+            Debug.LogError(e.Message);
         }
         finally
         {
             if (fileStream != null) fileStream.Close();
         }
     }
+
+    private void ApplyChanges(CharacterCreationUI UI)
+    {
+        if (preset == null) preset = new ImagePreset();
+        preset.name = UI.fileName.text;
+        preset.headIndex = UI.headIndex;
+        preset.chestIndex = UI.chestIndex;
+        preset.legIndex = UI.legIndex;
+        preset.feetIndex = UI.feetIndex;
+
+    }
 }
+
+
