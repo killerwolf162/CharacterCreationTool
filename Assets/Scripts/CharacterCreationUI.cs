@@ -17,12 +17,11 @@ public class CharacterCreationUI : MonoBehaviour
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
 
-    public Button headForward, headBackward,
+    private Button headForward, headBackward,
         chestForward, chestBackward,
         legForward, legBackward,
-        feetForward, feetBackward;
-
-    public Button exportButton;
+        feetForward, feetBackward,
+        exportButton;
 
     public TextField fileName;
 
@@ -49,7 +48,9 @@ public class CharacterCreationUI : MonoBehaviour
         #endregion
 
         #region UI Init
+
         var root = GetComponent<UIDocument>().rootVisualElement;
+
         headForward = root.Q<Button>("headforward");
         headBackward = root.Q<Button>("headbackward");
         chestForward = root.Q<Button>("chestforward");
@@ -64,6 +65,11 @@ public class CharacterCreationUI : MonoBehaviour
         chestDisplay = root.Q<VisualElement>("chestdisplay");
         legDisplay = root.Q<VisualElement>("legdisplay");
         feetDisplay = root.Q<VisualElement>("feetdisplay");
+
+        headDisplay.AddManipulator(new DragManipulator(headDisplay));
+        chestDisplay.AddManipulator(new DragManipulator(chestDisplay));
+        legDisplay.AddManipulator(new DragManipulator(legDisplay));
+        feetDisplay.AddManipulator(new DragManipulator(feetDisplay));
 
         fileName = root.Q<TextField>("filename");
 
