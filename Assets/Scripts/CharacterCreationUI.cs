@@ -17,21 +17,24 @@ public class CharacterCreationUI : MonoBehaviour
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
     [SerializeField] public int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
 
+    public Texture2D ImageToExport;
+
+    public TextField fileName;
+
+    public VisualElement characterView, headDisplay, chestDisplay, legDisplay, feetDisplay;
+
     private Button headForward, headBackward,
         chestForward, chestBackward,
         legForward, legBackward,
         feetForward, feetBackward,
         exportButton, loadButton, saveButton;
 
-    public TextField fileName;
-
-    public VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
     private ImageExporter exporter;
     private PresetSaver presetSaver;
     private PresetLoader presetLoader;
+    private ImageFuser fuser;
 
 
     private void Awake()
@@ -49,6 +52,7 @@ public class CharacterCreationUI : MonoBehaviour
         exporter = GetComponent<ImageExporter>();
         presetSaver = GetComponent<PresetSaver>();
         presetLoader = GetComponent<PresetLoader>();
+        fuser = GetComponent<ImageFuser>();
         #endregion
 
         #region UI Init
@@ -67,6 +71,7 @@ public class CharacterCreationUI : MonoBehaviour
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
 
+        characterView = root.Q<VisualElement>("characterview");
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
         legDisplay = root.Q<VisualElement>("legdisplay");
@@ -190,7 +195,8 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void exportButtonClicked()
     {
-        exporter.ExportImage(fileName.value, headImages[1].texture); // change to actual image when figured out how to fuse images
+        ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+        exporter.ExportImage(fileName.value, ImageToExport);
     }
 
     private void loadButtonClicked()
