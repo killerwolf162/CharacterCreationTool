@@ -5,21 +5,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
-[System.Serializable]
-public class ImagePreset
-{
-    public string name;
-    public int headIndex;
-    public int chestIndex;
-    public int legIndex;
-    public int feetIndex;
-
-    public ImagePreset()
-    {
-    }
-}
-
-public class ImageSaver : MonoBehaviour
+public class PresetSaver : MonoBehaviour
 {
 
     private XmlSerializer xmlSerializer;
@@ -40,9 +26,7 @@ public class ImageSaver : MonoBehaviour
             string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
 
             if (!Directory.Exists(directoryPath))
-            {
                 Directory.CreateDirectory(directoryPath);
-            }
 
             string filePath = Path.Combine(directoryPath, preset.name + ".xml");
             fileStream = File.Create(filePath);

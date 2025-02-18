@@ -30,7 +30,8 @@ public class CharacterCreationUI : MonoBehaviour
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
     private ImageExporter exporter;
-    private ImageSaver saver;
+    private PresetSaver presetSaver;
+    private PresetLoader presetLoader;
 
 
     private void Awake()
@@ -46,7 +47,8 @@ public class CharacterCreationUI : MonoBehaviour
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
         exporter = GetComponent<ImageExporter>();
-        saver = GetComponent<ImageSaver>();
+        presetSaver = GetComponent<PresetSaver>();
+        presetLoader = GetComponent<PresetLoader>();
         #endregion
 
         #region UI Init
@@ -193,12 +195,16 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void loadButtonClicked()
     {
-        Debug.Log("load button clicked");
+        presetLoader.LoadImagePreset(this);
+        SetImage(headDisplay, headImages, headIndex);
+        SetImage(chestDisplay, chestImages, chestIndex);
+        SetImage(legDisplay, legImages, legIndex);
+        SetImage(feetDisplay, feetImages, feetIndex);
     }
 
     private void saveButtonClicked()
     {
-        saver.SaveImagePreset(this);
+        presetSaver.SaveImagePreset(this);
     }
     #endregion
 }
