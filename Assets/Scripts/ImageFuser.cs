@@ -8,29 +8,46 @@ public class ImageFuser : MonoBehaviour
 
     public Texture2D FuseImages(Texture2D headImage, Texture2D chestImage, Texture2D legImage, Texture2D feetImage)
     {
-        int width = Mathf.Max(chestImage.width);
-        int height = Mathf.Max(headImage.height + chestImage.height, legImage.height + feetImage.height);
 
-        var fusedImage = new Texture2D(width, height, TextureFormat.RGBA32, false);
+        Texture2D resizedHead = ResizeImage(headImage, 150, 150);
+        Texture2D resizedChest = ResizeImage(chestImage, 250, 150);
+        Texture2D resizedLeg = ResizeImage(legImage, 150, 250);
+        Texture2D resizedFeet = ResizeImage(feetImage, 150, 50);
 
+        int width = resizedChest.width;
+        int height = resizedHead.height + resizedChest.height + resizedLeg.height + resizedFeet.height;
+        Texture2D combinedTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
+
+        // Fill with transparent pixels first
         Color[] clearPixels = new Color[width * height];
         for (int i = 0; i < clearPixels.Length; i++)
         {
             clearPixels[i] = Color.clear;
         }
-        fusedImage.SetPixels(clearPixels);
+        combinedTexture.SetPixels(clearPixels);
 
-        CopyTextureRegion(fusedImage, headImage, 0, 0);
+        int currentY = height;
 
-        CopyTextureRegion(fusedImage, chestImage, 0, height-headImage.height);
+        currentY -= resizedHead.height;
+        CopyTextureRegion(combinedTexture, resizedHead, 50, currentY);
 
-        CopyTextureRegion(fusedImage, legImage, 0, height - headImage.height - chestImage.height);
+        currentY -= resizedChest.height;
+        CopyTextureRegion(combinedTexture, resizedChest, 0, currentY);
 
-        CopyTextureRegion(fusedImage, feetImage, 0, height - headImage.height -chestImage.height - legImage.height);
+        currentY -= resizedLeg.height;
+        CopyTextureRegion(combinedTexture, resizedLeg, 50, currentY);
 
+        currentY -= resizedFeet.height;
+        CopyTextureRegion(combinedTexture, resizedFeet, 50, currentY);
 
+        combinedTexture.Apply();
+        
+        Destroy(resizedHead);
+        Destroy(resizedChest);
+        Destroy(resizedLeg);
+        Destroy(resizedFeet);
 
-        return fusedImage;
+        return combinedTexture;
     }
 
     private static void CopyTextureRegion(Texture2D target, Texture2D source, int startX, int startY)
@@ -38,4 +55,23 @@ public class ImageFuser : MonoBehaviour
         Color[] sourcePixels = source.GetPixels();
         target.SetPixels(startX, startY, source.width, source.height, sourcePixels);
     }
+
+    private static Texture2D ResizeImage(Texture2D source, int targetWidth, int targetHeight)
+    {
+        RenderTexture rt = RenderTexture.GetTemporary(targetWidth, targetHeight);
+        rt.filterMode = FilterMode.Bilinear;
+
+        RenderTexture.active = rt;
+        Graphics.Blit(source, rt);
+
+        Texture2D resized = new Texture2D(targetWidth, targetHeight, TextureFormat.RGBA32, false);
+        resized.ReadPixels(new Rect(0, 0, targetWidth, targetHeight), 0, 0);
+        resized.Apply();
+
+        RenderTexture.active = null;
+        RenderTexture.ReleaseTemporary(rt);
+
+        return resized;
+    }
+
 }
