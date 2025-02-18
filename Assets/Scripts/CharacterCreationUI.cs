@@ -11,17 +11,17 @@ using UnityEngine.Events;
 
 public class CharacterCreationUI : MonoBehaviour
 {
-    [SerializeField] private int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
+    [SerializeField] public int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
 
     private Button headForward, headBackward,
         chestForward, chestBackward,
         legForward, legBackward,
         feetForward, feetBackward,
-        exportButton;
+        exportButton, loadButton, saveButton;
 
     public TextField fileName;
 
@@ -30,6 +30,8 @@ public class CharacterCreationUI : MonoBehaviour
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
     private ImageExporter exporter;
+    private PresetSaver presetSaver;
+    private PresetLoader presetLoader;
 
 
     private void Awake()
@@ -41,10 +43,12 @@ public class CharacterCreationUI : MonoBehaviour
         imageCategoryList.Add(feetImages);
         #endregion
 
-        #region Load&Export
+        #region Load&Save&Export
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
         exporter = GetComponent<ImageExporter>();
+        presetSaver = GetComponent<PresetSaver>();
+        presetLoader = GetComponent<PresetLoader>();
         #endregion
 
         #region UI Init
@@ -60,6 +64,8 @@ public class CharacterCreationUI : MonoBehaviour
         feetForward = root.Q<Button>("feetforward");
         feetBackward = root.Q<Button>("feetbackward");
         exportButton = root.Q<Button>("exportbutton");
+        loadButton = root.Q<Button>("loadbutton");
+        saveButton = root.Q<Button>("savebutton");
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
@@ -82,6 +88,8 @@ public class CharacterCreationUI : MonoBehaviour
         feetForward.clicked += feetForwardClicked;
         feetBackward.clicked += feetBackwardClicked;
         exportButton.clicked += exportButtonClicked;
+        loadButton.clicked += loadButtonClicked;
+        saveButton.clicked += saveButtonClicked;
         #endregion
     }
 
@@ -182,11 +190,21 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void exportButtonClicked()
     {
-        string _fileName = fileName.value;
-
-        exporter.textureToExport = headImages[1].texture;
-        exporter.ExportImage(_fileName);
+        exporter.ExportImage(fileName.value, headImages[1].texture); // change to actual image when figured out how to fuse images
     }
 
+    private void loadButtonClicked()
+    {
+        presetLoader.LoadImagePreset(this);
+        SetImage(headDisplay, headImages, headIndex);
+        SetImage(chestDisplay, chestImages, chestIndex);
+        SetImage(legDisplay, legImages, legIndex);
+        SetImage(feetDisplay, feetImages, feetIndex);
+    }
+
+    private void saveButtonClicked()
+    {
+        presetSaver.SaveImagePreset(this);
+    }
     #endregion
 }
