@@ -50,10 +50,10 @@ public class CharacterCreationUI : MonoBehaviour
         #region Load&Save&Export
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
-        exporter = GetComponent<ImageExporter>();
-        presetSaver = GetComponent<PresetSaver>();
-        presetLoader = GetComponent<PresetLoader>();
-        fuser = GetComponent<ImageFuser>();
+        exporter = new ImageExporter();
+        presetSaver = new PresetSaver();
+        presetLoader = new PresetLoader();
+        fuser = new ImageFuser();
         #endregion
 
         #region UI Init
