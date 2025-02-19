@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.IO;
 
-public class ImageExporter : MonoBehaviour
+public class ImageExporter
 {
     public void ExportImage(string fileName, Texture2D textureToExport)
     {

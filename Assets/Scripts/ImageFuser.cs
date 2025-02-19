@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ImageFuser : MonoBehaviour
+public class ImageFuser
 {
 
     public Texture2D FuseImages(Texture2D headImage, Texture2D chestImage, Texture2D legImage, Texture2D feetImage)
@@ -41,11 +41,11 @@ public class ImageFuser : MonoBehaviour
         CopyTextureRegion(combinedTexture, resizedFeet, 50, currentY);
 
         combinedTexture.Apply();
-        
-        Destroy(resizedHead);
-        Destroy(resizedChest);
-        Destroy(resizedLeg);
-        Destroy(resizedFeet);
+
+        //resizedHead = null;
+        //resizedChest = null;
+        //resizedLeg = null;
+        //resizedFeet = null;
 
         return combinedTexture;
     }

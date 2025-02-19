@@ -5,12 +5,12 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
-public class PresetLoader : MonoBehaviour
+public class PresetLoader
 {
 
     private XmlSerializer xmlSerializer;
 
-    private void Start()
+    public PresetLoader()
     {
         xmlSerializer = new XmlSerializer(typeof(ImagePreset));
     }

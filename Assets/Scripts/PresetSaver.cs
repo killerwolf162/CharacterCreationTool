@@ -5,13 +5,13 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
-public class PresetSaver : MonoBehaviour
+public class PresetSaver
 {
 
     private XmlSerializer xmlSerializer;
     private ImagePreset preset;
 
-    private void Start()
+    public PresetSaver()
     {
         xmlSerializer = new XmlSerializer(typeof(ImagePreset));
     }
