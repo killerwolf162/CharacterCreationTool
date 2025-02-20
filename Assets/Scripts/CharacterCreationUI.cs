@@ -12,8 +12,8 @@ using UnityEngine.Events;
 public class CharacterCreationUI : MonoBehaviour
 {
     
-
     [SerializeField] public int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
+    [SerializeField] public string headName, chestName, legName, feetName;
 
     public TextField fileName { get; private set; }
 
@@ -26,10 +26,10 @@ public class CharacterCreationUI : MonoBehaviour
     private Texture2D ImageToExport;
 
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
-    private List<Sprite> headImages = new List<Sprite>();
-    private List<Sprite> chestImages = new List<Sprite>();
-    private List<Sprite> legImages = new List<Sprite>();
-    private List<Sprite> feetImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> headImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> legImages = new List<Sprite>();
+    [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
 
     private ImageLoader loader;
     private ImageExporter exporter;
@@ -85,10 +85,10 @@ public class CharacterCreationUI : MonoBehaviour
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
 
-        headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headIndex);
-        chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestIndex);
-        legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legIndex);
-        feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetIndex);
+        headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
+        chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
+        legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legName);
+        feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
 
         #endregion
     }
@@ -96,14 +96,20 @@ public class CharacterCreationUI : MonoBehaviour
     private void Start()
     {
         #region SetImagesAtStart
+
+        headName = headImages[0].name;
+        chestName = chestImages[0].name;
+        legName = legImages[0].name;
+        feetName = feetImages[0].name;
+
         if (headImages.Count > 0)
-            SetImage(headDisplay, headImages, headIndex);
+            SetImage(headDisplay, headImages, headName);
         if (chestImages.Count > 0)
-            SetImage(chestDisplay, chestImages, chestIndex);
+            SetImage(chestDisplay, chestImages, chestName);
         if (legImages.Count > 0)
-            SetImage(legDisplay, legImages, legIndex);
+            SetImage(legDisplay, legImages, legName);
         if (feetImages.Count > 0)
-            SetImage(feetDisplay, feetImages, feetIndex);
+            SetImage(feetDisplay, feetImages, feetName);
         #endregion
 
         #region InitializeListView
@@ -150,17 +156,22 @@ public class CharacterCreationUI : MonoBehaviour
         listView.selectionType = SelectionType.Single;
     }
 
-    private void OnSelectionChanged(ListView listview, List<Sprite> sprites, VisualElement visElem, ref int index)
+    private void OnSelectionChanged(ListView listview, List<Sprite> sprites, VisualElement visElem, ref string name)
     {
-        index = listview.selectedIndex;
-
-        SetImage(visElem, sprites, index);
+        var selectedItem = listview.selectedItem as Sprite;
+        name = selectedItem.name;
+        SetImage(visElem, sprites, name);
     }
 
-    public void RebuildListView(ListView listView, List<Sprite> sprites)
+    public void RebuildListView()
     {
-        sprites.Clear();
-        listView.Rebuild();
+        headListView.Rebuild();
+        
+        chestListView.Rebuild();
+        chestImages.Clear();
+
+        legListView.Rebuild();
+        feetListView.Rebuild();
     }
 
     public void UpdateList()
@@ -194,8 +205,9 @@ public class CharacterCreationUI : MonoBehaviour
         feetIndex = feetListView.selectedIndex;
     }
 
-    private void SetImage(VisualElement visElement, List<Sprite> spriteList, int index)
+    private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
+        var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
         var texture = spriteList[index];
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
@@ -213,10 +225,10 @@ public class CharacterCreationUI : MonoBehaviour
     {
         presetLoader.LoadImagePreset(this);
 
-        SetImage(headDisplay, headImages, headIndex);
-        SetImage(chestDisplay, chestImages, chestIndex);
-        SetImage(legDisplay, legImages, legIndex);
-        SetImage(feetDisplay, feetImages, feetIndex);
+        SetImage(headDisplay, headImages, headName);
+        SetImage(chestDisplay, chestImages, chestName);
+        SetImage(legDisplay, legImages, legName);
+        SetImage(feetDisplay, feetImages, feetName);
     }
 
     private void saveButtonClicked()

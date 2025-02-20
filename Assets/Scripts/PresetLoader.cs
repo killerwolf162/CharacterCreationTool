@@ -45,10 +45,10 @@ public class PresetLoader
 
     private void SetPreset(CharacterCreationUI UI, ImagePreset preset)
     {
-        UI.headIndex = preset.headIndex;
-        UI.chestIndex = preset.chestIndex;
-        UI.legIndex = preset.legIndex;
-        UI.feetIndex = preset.feetIndex;
+        UI.headName = preset.headName;
+        UI.chestName = preset.chestName;
+        UI.legName = preset.legName;
+        UI.feetName = preset.feetName;
 
         UI.fileName.SetValueWithoutNotify(preset.name);
     }
