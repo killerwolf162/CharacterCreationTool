@@ -213,11 +213,6 @@ public class CharacterCreationUI : MonoBehaviour
     {
         presetLoader.LoadImagePreset(this);
 
-        RebuildListView(headListView, headImages);
-        RebuildListView(chestListView, chestImages);
-        RebuildListView(legListView, legImages);
-        RebuildListView(feetListView, feetImages);
-
         SetImage(headDisplay, headImages, headIndex);
         SetImage(chestDisplay, chestImages, chestIndex);
         SetImage(legDisplay, legImages, legIndex);
