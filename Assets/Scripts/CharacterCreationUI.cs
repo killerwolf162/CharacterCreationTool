@@ -84,6 +84,12 @@ public class CharacterCreationUI : MonoBehaviour
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
+
+        headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headIndex);
+        chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestIndex);
+        legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legIndex);
+        feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetIndex);
+
         #endregion
     }
 
@@ -101,14 +107,14 @@ public class CharacterCreationUI : MonoBehaviour
         #endregion
 
         #region InitializeListView
-        InitializeListView(headListView, headImages);
-        InitializeListView(chestListView, chestImages);
-        InitializeListView(legListView, legImages);
-        InitializeListView(feetListView, feetImages);
+        InitializeListView(headListView, headImages, headDisplay);
+        InitializeListView(chestListView, chestImages, chestDisplay);
+        InitializeListView(legListView, legImages, legDisplay);
+        InitializeListView(feetListView, feetImages, feetDisplay);
         #endregion
     }
 
-    private void InitializeListView(ListView listView, List<Sprite> sprites)
+    private void InitializeListView(ListView listView, List<Sprite> sprites, VisualElement visElem)
     {
         listView.makeItem = () =>
         {
@@ -144,6 +150,13 @@ public class CharacterCreationUI : MonoBehaviour
         listView.selectionType = SelectionType.Single;
     }
 
+    private void OnSelectionChanged(ListView listview, List<Sprite> sprites, VisualElement visElem, ref int index)
+    {
+        index = listview.selectedIndex;
+
+        SetImage(visElem, sprites, index);
+    }
+
     public void RebuildListView(ListView listView, List<Sprite> sprites)
     {
         sprites.Clear();
@@ -173,9 +186,12 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    private int GetSpriteIndex(ListView listView)
+    private void SetSpriteIndexes()
     {
-        return listView.selectedIndex;
+        headIndex = headListView.selectedIndex;
+        chestIndex = chestListView.selectedIndex;
+        legIndex = legListView.selectedIndex;
+        feetIndex = feetListView.selectedIndex;
     }
 
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, int index)
@@ -185,9 +201,10 @@ public class CharacterCreationUI : MonoBehaviour
     }
 
     #region ButtonActions
-
     private void exportButtonClicked()
     {
+        SetSpriteIndexes();
+
         ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
         exporter.ExportImage(fileName.value, ImageToExport);
     }

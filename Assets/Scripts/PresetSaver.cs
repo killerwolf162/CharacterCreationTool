@@ -52,7 +52,6 @@ public class PresetSaver
         preset.chestIndex = UI.chestIndex;
         preset.legIndex = UI.legIndex;
         preset.feetIndex = UI.feetIndex;
-
     }
 }
 
