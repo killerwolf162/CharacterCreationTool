@@ -11,25 +11,24 @@ using UnityEngine.Events;
 
 public class CharacterCreationUI : MonoBehaviour
 {
+    [SerializeField] public string headName, chestName, legName, feetName;
+
+    public TextField fileName { get; private set; }
+
+    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
+
+    public ListView headListView, chestListView, legListView, feetListView;
+
+    private Button exportButton, loadButton, saveButton;
+
+    private Texture2D ImageToExport;
+
+    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
-    [SerializeField] public int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
 
-    public Texture2D ImageToExport;
-
-    public TextField fileName;
-
-    public VisualElement characterView, headDisplay, chestDisplay, legDisplay, feetDisplay;
-
-    private Button headForward, headBackward,
-        chestForward, chestBackward,
-        legForward, legBackward,
-        feetForward, feetBackward,
-        exportButton, loadButton, saveButton;
-
-    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private ImageLoader loader;
     private ImageExporter exporter;
     private PresetSaver presetSaver;
@@ -59,23 +58,19 @@ public class CharacterCreationUI : MonoBehaviour
 
         var root = GetComponent<UIDocument>().rootVisualElement;
 
-        headForward = root.Q<Button>("headforward");
-        headBackward = root.Q<Button>("headbackward");
-        chestForward = root.Q<Button>("chestforward");
-        chestBackward = root.Q<Button>("chestbackward");
-        legForward = root.Q<Button>("legsforward");
-        legBackward = root.Q<Button>("legsbackward");
-        feetForward = root.Q<Button>("feetforward");
-        feetBackward = root.Q<Button>("feetbackward");
         exportButton = root.Q<Button>("exportbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
 
-        characterView = root.Q<VisualElement>("characterview");
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
         legDisplay = root.Q<VisualElement>("legdisplay");
         feetDisplay = root.Q<VisualElement>("feetdisplay");
+
+        headListView = root.Q<ListView>("headlistview");
+        chestListView = root.Q<ListView>("chestlistview");
+        legListView = root.Q<ListView>("leglistview");
+        feetListView = root.Q<ListView>("feetlistview");
 
         headDisplay.AddManipulator(new DragManipulator(headDisplay));
         chestDisplay.AddManipulator(new DragManipulator(chestDisplay));
@@ -84,38 +79,100 @@ public class CharacterCreationUI : MonoBehaviour
 
         fileName = root.Q<TextField>("filename");
 
-        headForward.clicked += headForwardClicked;
-        headBackward.clicked += headBackwardClicked;
-        chestForward.clicked += chestForwardClicked;
-        chestBackward.clicked += chestBackwardClicked;
-        legForward.clicked += legForwardClicked;
-        legBackward.clicked += legBackwardClicked;
-        feetForward.clicked += feetForwardClicked;
-        feetBackward.clicked += feetBackwardClicked;
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
+
+        headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
+        chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
+        legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legName);
+        feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
+
         #endregion
     }
 
     private void Start()
     {
         #region SetImagesAtStart
+        UpdateList();
+
+        headName = headImages[0].name;
+        chestName = chestImages[0].name;
+        legName = legImages[0].name;
+        feetName = feetImages[0].name;
+
         if (headImages.Count > 0)
-            SetImage(headDisplay, headImages, headIndex);
+            SetImage(headDisplay, headImages, headName);
         if (chestImages.Count > 0)
-            SetImage(chestDisplay, chestImages, chestIndex);
+            SetImage(chestDisplay, chestImages, chestName);
         if (legImages.Count > 0)
-            SetImage(legDisplay, legImages, legIndex);
+            SetImage(legDisplay, legImages, legName);
         if (feetImages.Count > 0)
-            SetImage(feetDisplay, feetImages, feetIndex);
+            SetImage(feetDisplay, feetImages, feetName);
         #endregion
+
+        #region InitializeListView
+        InitializeListView(headListView, headImages, headDisplay);
+        InitializeListView(chestListView, chestImages, chestDisplay);
+        InitializeListView(legListView, legImages, legDisplay);
+        InitializeListView(feetListView, feetImages, feetDisplay);
+        #endregion
+    }
+
+    private void InitializeListView(ListView listView, List<Sprite> sprites, VisualElement visElem)
+    {
+        listView.makeItem = () =>
+        {
+            var container = new VisualElement();
+            container.style.width = new Length(100, LengthUnit.Pixel);
+            container.style.height = new Length(100, LengthUnit.Pixel);
+            container.style.marginTop = 2;
+            container.style.marginBottom = 2;
+            container.style.alignItems = Align.Center;
+
+            var image = new Image();
+            image.style.width = new Length(100, LengthUnit.Percent);
+            image.style.height = new Length(100, LengthUnit.Percent);
+            image.scaleMode = ScaleMode.ScaleToFit;
+
+            container.Add(image);
+            return container;
+        };
+
+        listView.bindItem = (element, index) =>
+        {
+            var container = element;
+            var image = container.Q<Image>();
+
+            if (index < sprites.Count)
+            {
+                image.sprite = sprites[index];
+            }
+        };
+
+        listView.itemsSource = sprites;
+        listView.fixedItemHeight = 100;
+        listView.selectionType = SelectionType.Single;
+    }
+
+    private void OnSelectionChanged(ListView listview, List<Sprite> sprites, VisualElement visElem, ref string name)
+    {
+        var selectedItem = listview.selectedItem as Sprite;
+        name = selectedItem.name;
+        SetImage(visElem, sprites, name);
+    }
+
+    public void RebuildListView()
+    {
+        headListView.Rebuild();
     }
 
     public void UpdateList()
     {
         for (int i = 0; i < imageCategoryList.Count; i++)
         {
+            imageCategoryList[i].Clear();
+
             foreach (var image in loader.imageCategories[i].imageList)
             {
                 if (loader.imageCategories[i].imageList.Count == 0)
@@ -124,77 +181,29 @@ public class CharacterCreationUI : MonoBehaviour
                     return;
                 }
 
-                List<Sprite> listToCopyTo = imageCategoryList[i];
-                if (!listToCopyTo.Contains(image))
-                {
-                    listToCopyTo.Add(image);
-                    Debug.Log($"Copied{image.name} to {listToCopyTo}");
-                }
+                imageCategoryList[i].Add(image);
+                Debug.Log($"Copied{image.name} to {imageCategoryList[i]}");
                 Debug.Log("Lists updated");
             }
         }
+
     }
 
-    private void SetImage(VisualElement visElement, List<Sprite> spriteList, int index)
+    private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
+        var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
         var texture = spriteList[index];
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
 
-    private void CycleThroughImage(VisualElement visElement, List<Sprite> spriteList, ref int index, bool forward)
-    {
-        if (forward == true) index++;
-        else if (forward == false) index--;
-        if (index < 0)
-            index = spriteList.Count - 1;
-        else if (index >= spriteList.Count)
-            index = 0;
-        SetImage(visElement, spriteList, index);
-    }
-
     #region ButtonActions
-    private void headForwardClicked()
-    {
-        CycleThroughImage(headDisplay, headImages, ref headIndex, true);
-    }
-
-    private void headBackwardClicked()
-    {
-        CycleThroughImage(headDisplay, headImages, ref headIndex, false);
-    }
-
-    private void chestForwardClicked()
-    {
-        CycleThroughImage(chestDisplay, chestImages, ref chestIndex, true);
-    }
-
-    private void chestBackwardClicked()
-    {
-        CycleThroughImage(chestDisplay, chestImages, ref chestIndex, false);
-    }
-
-    private void legForwardClicked()
-    {
-        CycleThroughImage(legDisplay, legImages, ref legIndex, true);
-    }
-
-    private void legBackwardClicked()
-    {
-        CycleThroughImage(legDisplay, legImages, ref legIndex, false);
-    }
-
-    private void feetForwardClicked()
-    {
-        CycleThroughImage(feetDisplay, feetImages, ref feetIndex, true);
-    }
-
-    private void feetBackwardClicked()
-    {
-        CycleThroughImage(feetDisplay, feetImages, ref feetIndex, false);
-    }
-
     private void exportButtonClicked()
     {
+        var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+        var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+        var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+        var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
+
         ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
         exporter.ExportImage(fileName.value, ImageToExport);
     }
@@ -202,10 +211,11 @@ public class CharacterCreationUI : MonoBehaviour
     private void loadButtonClicked()
     {
         presetLoader.LoadImagePreset(this);
-        SetImage(headDisplay, headImages, headIndex);
-        SetImage(chestDisplay, chestImages, chestIndex);
-        SetImage(legDisplay, legImages, legIndex);
-        SetImage(feetDisplay, feetImages, feetIndex);
+
+        SetImage(headDisplay, headImages, headName);
+        SetImage(chestDisplay, chestImages, chestName);
+        SetImage(legDisplay, legImages, legName);
+        SetImage(feetDisplay, feetImages, feetName);
     }
 
     private void saveButtonClicked()

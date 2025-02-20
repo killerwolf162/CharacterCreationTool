@@ -132,12 +132,8 @@ GameObject:
   m_Component:
   - component: {fileID: 662716779}
   - component: {fileID: 662716778}
-  - component: {fileID: 662716782}
-  - component: {fileID: 662716785}
-  - component: {fileID: 662716783}
-  - component: {fileID: 662716784}
-  - component: {fileID: 662716781}
   - component: {fileID: 662716780}
+  - component: {fileID: 662716781}
   m_Layer: 5
   m_Name: CharacterCreationUI
   m_TagString: Untagged
@@ -188,15 +184,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b2e8b00276c1be344ab677d9f9b21af6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  headName: 
+  chestName: 
+  legName: 
+  feetName: 
   headImages: []
   chestImages: []
   legImages: []
   feetImages: []
-  headIndex: 0
-  chestIndex: 0
-  legIndex: 0
-  feetIndex: 0
-  ImageToExport: {fileID: 0}
 --- !u!114 &662716781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -224,67 +219,7 @@ MonoBehaviour:
     autoReload: 1
   onImageLoaded:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 662716780}
-        m_TargetAssemblyTypeName: CharacterCreationUI, Assembly-CSharp
-        m_MethodName: UpdateList
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
---- !u!114 &662716782
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662716777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f8e4382bfd62086438a71a559257cf48, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &662716783
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662716777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7c2cc8d3cadb83d47a646787890e8493, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &662716784
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662716777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d5dca45d8f9fe642bc5ac46a5d9d2c6, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &662716785
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 662716777}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8fd58a1f9546add4f92b4f6067251f6e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
+      m_Calls: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

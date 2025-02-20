@@ -48,11 +48,10 @@ public class PresetSaver
     {
         if (preset == null) preset = new ImagePreset();
         preset.name = UI.fileName.text;
-        preset.headIndex = UI.headIndex;
-        preset.chestIndex = UI.chestIndex;
-        preset.legIndex = UI.legIndex;
-        preset.feetIndex = UI.feetIndex;
-
+        preset.headName = UI.headName;
+        preset.chestName = UI.chestName;
+        preset.legName = UI.legName;
+        preset.feetName = UI.feetName;
     }
 }
 
