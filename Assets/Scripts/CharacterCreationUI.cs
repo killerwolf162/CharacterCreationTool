@@ -11,8 +11,6 @@ using UnityEngine.Events;
 
 public class CharacterCreationUI : MonoBehaviour
 {
-    
-    [SerializeField] public int headIndex = 1, chestIndex = 1, legIndex = 1, feetIndex = 1;
     [SerializeField] public string headName, chestName, legName, feetName;
 
     public TextField fileName { get; private set; }
@@ -96,6 +94,7 @@ public class CharacterCreationUI : MonoBehaviour
     private void Start()
     {
         #region SetImagesAtStart
+        UpdateList();
 
         headName = headImages[0].name;
         chestName = chestImages[0].name;
@@ -166,18 +165,14 @@ public class CharacterCreationUI : MonoBehaviour
     public void RebuildListView()
     {
         headListView.Rebuild();
-        
-        chestListView.Rebuild();
-        chestImages.Clear();
-
-        legListView.Rebuild();
-        feetListView.Rebuild();
     }
 
     public void UpdateList()
     {
         for (int i = 0; i < imageCategoryList.Count; i++)
         {
+            imageCategoryList[i].Clear();
+
             foreach (var image in loader.imageCategories[i].imageList)
             {
                 if (loader.imageCategories[i].imageList.Count == 0)
@@ -186,23 +181,12 @@ public class CharacterCreationUI : MonoBehaviour
                     return;
                 }
 
-                List<Sprite> listToCopyTo = imageCategoryList[i];
-                if (!listToCopyTo.Contains(image))
-                {
-                    listToCopyTo.Add(image);
-                    Debug.Log($"Copied{image.name} to {listToCopyTo}");
-                }
+                imageCategoryList[i].Add(image);
+                Debug.Log($"Copied{image.name} to {imageCategoryList[i]}");
                 Debug.Log("Lists updated");
             }
         }
-    }
 
-    private void SetSpriteIndexes()
-    {
-        headIndex = headListView.selectedIndex;
-        chestIndex = chestListView.selectedIndex;
-        legIndex = legListView.selectedIndex;
-        feetIndex = feetListView.selectedIndex;
     }
 
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
@@ -215,7 +199,10 @@ public class CharacterCreationUI : MonoBehaviour
     #region ButtonActions
     private void exportButtonClicked()
     {
-        SetSpriteIndexes();
+        var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+        var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+        var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+        var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
         ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
         exporter.ExportImage(fileName.value, ImageToExport);
