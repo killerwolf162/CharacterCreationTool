@@ -4,6 +4,9 @@
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExportBackground" class="utilitybuttonlabel" style="left: 300px;">
         <ui:Button text="Export" parse-escape-sequences="true" display-tooltip-when-elided="true" name="exportbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
     </ui:Label>
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ImportBackground" class="utilitybuttonlabel" style="left: 450px; top: 0;">
+        <ui:Button text="Import" parse-escape-sequences="true" display-tooltip-when-elided="true" name="importbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
+    </ui:Label>
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="LoadBackground" class="utilitybuttonlabel" style="left: 150px;">
         <ui:Button text="Load Preset" parse-escape-sequences="true" display-tooltip-when-elided="true" name="loadbutton" enable-rich-text="false" class="utilitybutton" />
     </ui:Label>

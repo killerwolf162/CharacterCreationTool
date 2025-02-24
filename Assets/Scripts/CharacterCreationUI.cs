@@ -19,7 +19,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     public ListView headListView, chestListView, legListView, feetListView;
 
-    private Button exportButton, loadButton, saveButton;
+    private Button exportButton, importButton, loadButton, saveButton;
 
     private Texture2D ImageToExport;
 
@@ -59,6 +59,7 @@ public class CharacterCreationUI : MonoBehaviour
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         exportButton = root.Q<Button>("exportbutton");
+        importButton = root.Q<Button>("importbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
 
@@ -82,6 +83,7 @@ public class CharacterCreationUI : MonoBehaviour
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
+        importButton.clicked += importButtonClicked;
 
         headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
         chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
@@ -206,6 +208,11 @@ public class CharacterCreationUI : MonoBehaviour
 
         ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
         exporter.ExportImage(fileName.value, ImageToExport);
+    }
+
+    private void importButtonClicked()
+    {
+
     }
 
     private void loadButtonClicked()
