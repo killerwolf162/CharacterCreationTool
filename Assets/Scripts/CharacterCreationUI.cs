@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using UnityEngine.UIElements;
 using System.Xml.Serialization;
 using UnityEngine.Events;
+using SimpleFileBrowser;
 
 public class CharacterCreationUI : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     public ListView headListView, chestListView, legListView, feetListView;
 
-    private Button exportButton, loadButton, saveButton;
+    private Button exportButton, importButton, loadButton, saveButton;
 
     private Texture2D ImageToExport;
 
@@ -35,9 +36,14 @@ public class CharacterCreationUI : MonoBehaviour
     private PresetLoader presetLoader;
     private ImageFuser fuser;
 
-
     private void Awake()
     {
+        #region Setup SFB
+
+        FileBrowser.SetFilters(true, new FileBrowser.Filter("Images", ".jpg", ".png"), new FileBrowser.Filter("Text Files", ".xml"));
+
+        #endregion
+
         #region Fill list
         imageCategoryList.Add(headImages);
         imageCategoryList.Add(chestImages);
@@ -59,6 +65,7 @@ public class CharacterCreationUI : MonoBehaviour
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         exportButton = root.Q<Button>("exportbutton");
+        importButton = root.Q<Button>("importbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
 
@@ -82,6 +89,7 @@ public class CharacterCreationUI : MonoBehaviour
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
+        importButton.clicked += importButtonClicked;
 
         headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
         chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
@@ -89,6 +97,7 @@ public class CharacterCreationUI : MonoBehaviour
         feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
 
         #endregion
+
     }
 
     private void Start()
@@ -96,10 +105,14 @@ public class CharacterCreationUI : MonoBehaviour
         #region SetImagesAtStart
         UpdateList();
 
-        headName = headImages[0].name;
-        chestName = chestImages[0].name;
-        legName = legImages[0].name;
-        feetName = feetImages[0].name;
+        if (headImages.Count > 0)
+            headName = headImages[0].name;
+        if (chestImages.Count > 0)
+            chestName = chestImages[0].name;
+        if (legImages.Count > 0)
+            legName = legImages[0].name;
+        if (feetImages.Count > 0)
+            feetName = feetImages[0].name;
 
         if (headImages.Count > 0)
             SetImage(headDisplay, headImages, headName);
@@ -165,6 +178,9 @@ public class CharacterCreationUI : MonoBehaviour
     public void RebuildListView()
     {
         headListView.Rebuild();
+        chestListView.Rebuild();
+        legListView.Rebuild();
+        feetListView.Rebuild();
     }
 
     public void UpdateList()
@@ -192,6 +208,9 @@ public class CharacterCreationUI : MonoBehaviour
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
         var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
+        if (spriteList[index] == null)
+            return;
+
         var texture = spriteList[index];
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
@@ -208,19 +227,109 @@ public class CharacterCreationUI : MonoBehaviour
         exporter.ExportImage(fileName.value, ImageToExport);
     }
 
+    private void importButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine());
+    }
+
     private void loadButtonClicked()
     {
-        presetLoader.LoadImagePreset(this);
-
-        SetImage(headDisplay, headImages, headName);
-        SetImage(chestDisplay, chestImages, chestName);
-        SetImage(legDisplay, legImages, legName);
-        SetImage(feetDisplay, feetImages, feetName);
+        StartCoroutine(ShowLoadDialogCoroutine());
     }
 
     private void saveButtonClicked()
     {
-        presetSaver.SaveImagePreset(this);
+        string fullPath = Path.Combine(Application.persistentDataPath, "Presets");
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+        StartCoroutine(ShowSaveDialogCoroutine());
     }
     #endregion
+
+    #region SFB functions
+
+    IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
+    {
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, Application.persistentDataPath, null, "Select folder", "Import");
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            ImportSelectedImages(FileBrowser.Result[0], filePaths);
+    }
+
+    IEnumerator ShowImportDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".png");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, "C:\\", null, "Select Files", "Select");
+
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, 3);
+    }
+
+    IEnumerator ShowLoadDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".xml");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to load", "Load");
+
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, 1);
+    }
+
+    IEnumerator ShowSaveDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".xml");
+        yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to save", "Save");
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, 2);
+    }
+
+    private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)
+    {
+        for (int i = 0; i < selectedFiles.Length; i++)
+        {
+            string filePath = selectedFiles[i];
+            Debug.Log(filePath);
+            string destinationPath = Path.Combine(selectedFolder, FileBrowserHelpers.GetFilename(filePath));
+            Debug.Log(destinationPath);
+            FileBrowserHelpers.CopyFile(filePath, destinationPath);
+        }
+        loader.LoadAllImages();
+    }
+
+    void OnFilesSelected(string[] filePaths, int state)
+    {
+        for (int i = 0; i < filePaths.Length; i++)
+            Debug.Log(filePaths[i]);
+
+        string filePath = filePaths[0];
+
+        if (state == 1) //loading preset
+        {
+            presetLoader.LoadImagePreset(this, filePath);
+            SetImage(headDisplay, headImages, headName);
+            SetImage(chestDisplay, chestImages, chestName);
+            SetImage(legDisplay, legImages, legName);
+            SetImage(feetDisplay, feetImages, feetName);
+        }
+
+        if (state == 2) //saving preset
+        {
+            presetSaver.SaveImagePreset(this, filePath);
+        }
+
+        if (state == 3) //importing images
+        {
+            StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
+        }
+    }
+    #endregion
+
 }
