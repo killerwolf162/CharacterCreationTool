@@ -16,23 +16,17 @@ public class PresetSaver
         xmlSerializer = new XmlSerializer(typeof(ImagePreset));
     }
 
-    public void SaveImagePreset(CharacterCreationUI UI)
+    public void SaveImagePreset(CharacterCreationUI UI, string destinationPath)
     {
         FileStream fileStream = null;
         ApplyChanges(UI);
 
         try
         {
-            string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
-
-            if (!Directory.Exists(directoryPath))
-                Directory.CreateDirectory(directoryPath);
-
-            string filePath = Path.Combine(directoryPath, preset.name + ".xml");
-            fileStream = File.Create(filePath);
+            fileStream = File.Create(destinationPath);
             xmlSerializer.Serialize(fileStream, preset);
             fileStream.Flush();
-            Debug.Log($"Image exported successfully to: {filePath}");
+            Debug.Log($"Image exported successfully to: {destinationPath}");
         }
         catch (System.Exception e)
         {

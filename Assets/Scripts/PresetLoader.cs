@@ -15,18 +15,18 @@ public class PresetLoader
         xmlSerializer = new XmlSerializer(typeof(ImagePreset));
     }
 
-    public void LoadImagePreset(CharacterCreationUI UI)
+    public void LoadImagePreset(CharacterCreationUI UI, string destinationPath)
     {
         FileStream fileStream = null;
 
         try
         {
-            string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
-            if (!Directory.Exists(directoryPath))
-                Debug.Log("No Preset Directory");
+            //string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
+            //if (!Directory.Exists(directoryPath))
+            //    Debug.Log("No Preset Directory");
 
-            string filePath = Path.Combine(directoryPath, UI.fileName.text + ".xml");
-            fileStream = File.OpenRead(filePath);
+            //string filePath = Path.Combine(directoryPath, UI.fileName.text + ".xml");
+            fileStream = File.OpenRead(destinationPath);
             ImagePreset preset = (ImagePreset)xmlSerializer.Deserialize(fileStream);
 
             SetPreset(UI, preset);

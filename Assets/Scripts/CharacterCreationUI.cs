@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using UnityEngine.UIElements;
 using System.Xml.Serialization;
 using UnityEngine.Events;
+using SimpleFileBrowser;
 
 public class CharacterCreationUI : MonoBehaviour
 {
@@ -38,6 +39,12 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void Awake()
     {
+        #region Setup SFB
+
+        FileBrowser.SetFilters(true, new FileBrowser.Filter("Images", ".jpg", ".png"), new FileBrowser.Filter("Text Files", ".xml"));
+
+        #endregion
+
         #region Fill list
         imageCategoryList.Add(headImages);
         imageCategoryList.Add(chestImages);
@@ -91,6 +98,7 @@ public class CharacterCreationUI : MonoBehaviour
         feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
 
         #endregion
+
     }
 
     private void Start()
@@ -98,10 +106,14 @@ public class CharacterCreationUI : MonoBehaviour
         #region SetImagesAtStart
         UpdateList();
 
-        headName = headImages[0].name;
-        chestName = chestImages[0].name;
-        legName = legImages[0].name;
-        feetName = feetImages[0].name;
+        if (headImages.Count > 0)
+            headName = headImages[0].name;
+        if (chestImages.Count > 0)
+            chestName = chestImages[0].name;
+        if (legImages.Count > 0)
+            legName = legImages[0].name;
+        if (feetImages.Count > 0)
+            feetName = feetImages[0].name;
 
         if (headImages.Count > 0)
             SetImage(headDisplay, headImages, headName);
@@ -119,6 +131,12 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(legListView, legImages, legDisplay);
         InitializeListView(feetListView, feetImages, feetDisplay);
         #endregion
+    }
+    private void CreateDirectory(string folderName)
+    {
+        string directoryPath = Path.Combine(Application.persistentDataPath, folderName);
+        if (!Directory.Exists((directoryPath)))
+            Directory.CreateDirectory(directoryPath);
     }
 
     private void InitializeListView(ListView listView, List<Sprite> sprites, VisualElement visElem)
@@ -167,6 +185,9 @@ public class CharacterCreationUI : MonoBehaviour
     public void RebuildListView()
     {
         headListView.Rebuild();
+        chestListView.Rebuild();
+        legListView.Rebuild();
+        feetListView.Rebuild();
     }
 
     public void UpdateList()
@@ -194,6 +215,9 @@ public class CharacterCreationUI : MonoBehaviour
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
         var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
+        if (spriteList[index] == null)
+            return;
+
         var texture = spriteList[index];
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
@@ -217,17 +241,58 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void loadButtonClicked()
     {
-        presetLoader.LoadImagePreset(this);
-
-        SetImage(headDisplay, headImages, headName);
-        SetImage(chestDisplay, chestImages, chestName);
-        SetImage(legDisplay, legImages, legName);
-        SetImage(feetDisplay, feetImages, feetName);
+        StartCoroutine(ShowLoadDialogCoroutine());
     }
 
     private void saveButtonClicked()
     {
-        presetSaver.SaveImagePreset(this);
+        StartCoroutine(ShowSaveDialogCoroutine());
     }
     #endregion
+
+    #region SFB functions
+    IEnumerator ShowLoadDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".xml");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, Application.persistentDataPath, null, "Select Files", "Load");
+
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, true);
+    }
+
+    IEnumerator ShowSaveDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".xml");
+        yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, true, Application.persistentDataPath, null, "Save", "Save");
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, false);
+    }
+
+    void OnFilesSelected(string[] filePaths, bool isLoading)
+    {
+        for (int i = 0; i < filePaths.Length; i++)
+            Debug.Log(filePaths[i]);
+
+        string filePath = filePaths[0];
+
+        if (isLoading == true)
+        {
+            presetLoader.LoadImagePreset(this, filePath);
+            SetImage(headDisplay, headImages, headName);
+            SetImage(chestDisplay, chestImages, chestName);
+            SetImage(legDisplay, legImages, legName);
+            SetImage(feetDisplay, feetImages, feetName);
+        }
+
+        if (isLoading == false)
+        {
+            presetSaver.SaveImagePreset(this, filePath);
+        }
+    }
+    #endregion
+
 }
