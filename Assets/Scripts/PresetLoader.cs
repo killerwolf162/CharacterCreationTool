@@ -49,7 +49,5 @@ public class PresetLoader
         UI.chestName = preset.chestName;
         UI.legName = preset.legName;
         UI.feetName = preset.feetName;
-
-        UI.fileName.SetValueWithoutNotify(preset.name);
     }
 }

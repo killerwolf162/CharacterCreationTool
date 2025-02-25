@@ -41,7 +41,6 @@ public class PresetSaver
     private void ApplyChanges(CharacterCreationUI UI)
     {
         if (preset == null) preset = new ImagePreset();
-        preset.name = UI.fileName.text;
         preset.headName = UI.headName;
         preset.chestName = UI.chestName;
         preset.legName = UI.legName;

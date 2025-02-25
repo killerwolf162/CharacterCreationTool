@@ -36,7 +36,6 @@ public class CharacterCreationUI : MonoBehaviour
     private PresetLoader presetLoader;
     private ImageFuser fuser;
 
-
     private void Awake()
     {
         #region Setup SFB
@@ -131,12 +130,6 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(legListView, legImages, legDisplay);
         InitializeListView(feetListView, feetImages, feetDisplay);
         #endregion
-    }
-    private void CreateDirectory(string folderName)
-    {
-        string directoryPath = Path.Combine(Application.persistentDataPath, folderName);
-        if (!Directory.Exists((directoryPath)))
-            Directory.CreateDirectory(directoryPath);
     }
 
     private void InitializeListView(ListView listView, List<Sprite> sprites, VisualElement visElem)
@@ -236,7 +229,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void importButtonClicked()
     {
-
+        StartCoroutine(ShowImportDialogCoroutine());
     }
 
     private void loadButtonClicked()
@@ -246,40 +239,79 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void saveButtonClicked()
     {
+        string fullPath = Path.Combine(Application.persistentDataPath, "Presets");
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
         StartCoroutine(ShowSaveDialogCoroutine());
     }
     #endregion
 
     #region SFB functions
-    IEnumerator ShowLoadDialogCoroutine()
+
+    IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
     {
-        FileBrowser.SetDefaultFilter(".xml");
-        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, Application.persistentDataPath, null, "Select Files", "Load");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, Application.persistentDataPath, null, "Select folder", "Import");
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            ImportSelectedImages(FileBrowser.Result[0], filePaths);
+    }
+
+    IEnumerator ShowImportDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".png");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, "C:\\", null, "Select Files", "Select");
 
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, true);
+            OnFilesSelected(FileBrowser.Result, 3);
+    }
+
+    IEnumerator ShowLoadDialogCoroutine()
+    {
+        FileBrowser.SetDefaultFilter(".xml");
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to load", "Load");
+
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, 1);
     }
 
     IEnumerator ShowSaveDialogCoroutine()
     {
         FileBrowser.SetDefaultFilter(".xml");
-        yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, true, Application.persistentDataPath, null, "Save", "Save");
+        yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to save", "Save");
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, false);
+            OnFilesSelected(FileBrowser.Result, 2);
     }
 
-    void OnFilesSelected(string[] filePaths, bool isLoading)
+    private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)
+    {
+        for (int i = 0; i < selectedFiles.Length; i++)
+        {
+            string filePath = selectedFiles[i];
+            Debug.Log(filePath);
+            string destinationPath = Path.Combine(selectedFolder, FileBrowserHelpers.GetFilename(filePath));
+            Debug.Log(destinationPath);
+            FileBrowserHelpers.CopyFile(filePath, destinationPath);
+        }
+        loader.LoadAllImages();
+    }
+
+    void OnFilesSelected(string[] filePaths, int state)
     {
         for (int i = 0; i < filePaths.Length; i++)
             Debug.Log(filePaths[i]);
 
         string filePath = filePaths[0];
 
-        if (isLoading == true)
+        if (state == 1) //loading preset
         {
             presetLoader.LoadImagePreset(this, filePath);
             SetImage(headDisplay, headImages, headName);
@@ -288,9 +320,14 @@ public class CharacterCreationUI : MonoBehaviour
             SetImage(feetDisplay, feetImages, feetName);
         }
 
-        if (isLoading == false)
+        if (state == 2) //saving preset
         {
             presetSaver.SaveImagePreset(this, filePath);
+        }
+
+        if (state == 3) //importing images
+        {
+            StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
         }
     }
     #endregion

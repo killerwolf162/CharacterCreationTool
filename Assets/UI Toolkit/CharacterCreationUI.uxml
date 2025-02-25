@@ -1,6 +1,6 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/CharacterCreationStyle.uss?fileID=7433441132597879392&amp;guid=316df77569964bc4889ee3efc9164ca3&amp;type=3#CharacterCreationStyle" />
-    <ui:TextField picking-mode="Ignore" label="File name" value="filler text" name="filename" style="background-color: rgb(170, 170, 170); color: rgb(0, 0, 0); width: 400px; height: 40px; position: absolute; left: 0; top: 50px; right: 0; bottom: 0; -unity-text-align: upper-center; font-size: 20px;" />
+    <ui:TextField picking-mode="Ignore" label="File name" value="filler text" name="filename" style="background-color: rgb(170, 170, 170); color: rgb(0, 0, 0); width: 400px; height: 40px; position: absolute; left: 0; top: 50px; right: 0; bottom: 0; -unity-text-align: upper-center; font-size: 20px; display: none;" />
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExportBackground" class="utilitybuttonlabel" style="left: 300px;">
         <ui:Button text="Export" parse-escape-sequences="true" display-tooltip-when-elided="true" name="exportbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
     </ui:Label>
