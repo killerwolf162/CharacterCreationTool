@@ -218,13 +218,20 @@ public class CharacterCreationUI : MonoBehaviour
     #region ButtonActions
     private void exportButtonClicked()
     {
-        var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
-        var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
-        var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
-        var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
+        //var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+        //var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+        //var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+        //var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
-        ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
-        exporter.ExportImage(fileName.value, ImageToExport);
+        //ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+        //exporter.ExportImage(fileName.value, ImageToExport);
+
+        string fullPath = Path.Combine(Application.persistentDataPath, "Exports");
+        if (!Directory.Exists(fullPath))
+        {
+            Directory.CreateDirectory(fullPath);
+        }
+        StartCoroutine(ShowExportDialogCoroutine());
     }
 
     private void importButtonClicked()
@@ -249,6 +256,15 @@ public class CharacterCreationUI : MonoBehaviour
     #endregion
 
     #region SFB functions
+
+    IEnumerator ShowExportDialogCoroutine()
+    {
+        yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select folder", "Export");
+        Debug.Log(FileBrowser.Success);
+
+        if (FileBrowser.Success)
+            OnFilesSelected(FileBrowser.Result, 4);
+    }
 
     IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
     {
@@ -310,6 +326,7 @@ public class CharacterCreationUI : MonoBehaviour
             Debug.Log(filePaths[i]);
 
         string filePath = filePaths[0];
+        
 
         if (state == 1) //loading preset
         {
@@ -328,6 +345,18 @@ public class CharacterCreationUI : MonoBehaviour
         if (state == 3) //importing images
         {
             StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
+        }
+
+        if(state == 4)
+        {
+            fileName.value = filePath;
+            var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+            var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+            var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+            var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
+
+            ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+            exporter.ExportImage(fileName.value, ImageToExport);
         }
     }
     #endregion

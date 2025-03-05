@@ -22,7 +22,7 @@
     <ui:Label tabindex="-1" text="Legs" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Legs" class="buttontext listViewMakeUp" style="top: 350px; right: 0; left: 0; bottom: 0;">
         <ui:ListView name="leglistview" style="max-height: 1000px; width: 150px; height: 200px; background-color: rgba(0, 0, 0, 0.27); left: 0; top: 100%; position: absolute;" />
     </ui:Label>
-    <ui:Label tabindex="-1" text="Feets" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Feets" class="buttontext listViewMakeUp" style="top: 350px; right: 0; left: 200px; bottom: 0;">
+    <ui:Label tabindex="-1" text="Feet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Feet" class="buttontext listViewMakeUp" style="top: 350px; right: 0; left: 200px; bottom: 0;">
         <ui:ListView name="feetlistview" style="position: absolute; max-height: 1000px; width: 150px; height: 200px; top: 100%; left: 0; background-color: rgba(0, 0, 0, 0.27);" />
     </ui:Label>
     <ui:VisualElement name="CharacterView" style="flex-grow: 1; align-items: auto; left: 853px; top: 52px; transform-origin: right top; position: absolute; scale: 0.75 0.75; height: 700px; width: 250px;">
