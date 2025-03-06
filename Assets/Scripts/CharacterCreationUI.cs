@@ -149,6 +149,7 @@ public class CharacterCreationUI : MonoBehaviour
             image.scaleMode = ScaleMode.ScaleToFit;
 
             container.Add(image);
+            container.AddManipulator(new DragManipulator(container));
             return container;
         };
 
@@ -223,7 +224,7 @@ public class CharacterCreationUI : MonoBehaviour
         var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
         var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
-        ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+        ImageToExport = fuser.FuseImages(headDisplay, chestDisplay, legDisplay, feetDisplay);
         exporter.ExportImage(fileName.value, ImageToExport);
     }
 

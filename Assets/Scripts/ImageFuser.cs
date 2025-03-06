@@ -6,13 +6,13 @@ using UnityEngine.UIElements;
 public class ImageFuser
 {
 
-    public Texture2D FuseImages(Texture2D headImage, Texture2D chestImage, Texture2D legImage, Texture2D feetImage)
+    public Texture2D FuseImages(VisualElement headImage, VisualElement chestImage, VisualElement legImage, VisualElement feetImage)
     {
 
-        Texture2D resizedHead = ResizeImage(headImage, 150, 150);
-        Texture2D resizedChest = ResizeImage(chestImage, 250, 150);
-        Texture2D resizedLeg = ResizeImage(legImage, 150, 250);
-        Texture2D resizedFeet = ResizeImage(feetImage, 150, 50);
+        Texture2D resizedHead = ResizeImage(headImage.style.backgroundImage.value.texture, ((int)headImage.resolvedStyle.width), (int)headImage.resolvedStyle.height);
+        Texture2D resizedChest = ResizeImage(chestImage.style.backgroundImage.value.texture, (int)chestImage.resolvedStyle.width, (int)chestImage.resolvedStyle.height);
+        Texture2D resizedLeg = ResizeImage(legImage.style.backgroundImage.value.texture, (int)legImage.resolvedStyle.width, (int)legImage.resolvedStyle.height);
+        Texture2D resizedFeet = ResizeImage(feetImage.style.backgroundImage.value.texture, (int)feetImage.resolvedStyle.width, (int)feetImage.resolvedStyle.height);
 
         int width = resizedChest.width;
         int height = resizedHead.height + resizedChest.height + resizedLeg.height + resizedFeet.height;
@@ -29,16 +29,16 @@ public class ImageFuser
         int currentY = height;
 
         currentY -= resizedHead.height;
-        CopyTextureRegion(combinedTexture, resizedHead, 50, currentY);
+        CopyTextureRegion(combinedTexture, resizedHead, 0, currentY);
 
         currentY -= resizedChest.height;
         CopyTextureRegion(combinedTexture, resizedChest, 0, currentY);
 
         currentY -= resizedLeg.height;
-        CopyTextureRegion(combinedTexture, resizedLeg, 50, currentY);
+        CopyTextureRegion(combinedTexture, resizedLeg, 0, currentY);
 
         currentY -= resizedFeet.height;
-        CopyTextureRegion(combinedTexture, resizedFeet, 50, currentY);
+        CopyTextureRegion(combinedTexture, resizedFeet, 0, currentY);
 
         combinedTexture.Apply();
 
