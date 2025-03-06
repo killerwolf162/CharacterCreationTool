@@ -30,10 +30,13 @@ public class DragManipulator : PointerManipulator
 
     private void PointerDownHandler(PointerDownEvent evt)
     {
-        startPosition = target.transform.position;
-        pointerStartPosition = evt.position;
-        target.CapturePointer(evt.pointerId);
-        enabled = true;
+        if(evt.button == 0)
+        {
+            startPosition = target.transform.position;
+            pointerStartPosition = evt.position;
+            target.CapturePointer(evt.pointerId);
+            enabled = true;
+        }     
     }
 
     private void PointerMoveHandler(PointerMoveEvent evt)
