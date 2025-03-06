@@ -219,25 +219,12 @@ public class CharacterCreationUI : MonoBehaviour
     #region ButtonActions
     private void exportButtonClicked()
     {
-        //var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
-        //var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
-        //var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
-        //var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
-
-<<<<<<< HEAD
-        ImageToExport = fuser.FuseImages(headDisplay, chestDisplay, legDisplay, feetDisplay);
-        exporter.ExportImage(fileName.value, ImageToExport);
-=======
-        //ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
-        //exporter.ExportImage(fileName.value, ImageToExport);
-
         string fullPath = Path.Combine(Application.persistentDataPath, "Exports");
         if (!Directory.Exists(fullPath))
         {
             Directory.CreateDirectory(fullPath);
         }
         StartCoroutine(ShowExportDialogCoroutine());
->>>>>>> main
     }
 
     private void importButtonClicked()
@@ -361,7 +348,8 @@ public class CharacterCreationUI : MonoBehaviour
             var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
             var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
-            ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
+            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
             exporter.ExportImage(fileName.value, ImageToExport);
         }
     }

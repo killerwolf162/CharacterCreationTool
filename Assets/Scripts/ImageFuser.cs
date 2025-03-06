@@ -6,13 +6,14 @@ using UnityEngine.UIElements;
 public class ImageFuser
 {
 
-    public Texture2D FuseImages(VisualElement headImage, VisualElement chestImage, VisualElement legImage, VisualElement feetImage)
+    public Texture2D FuseImages(Texture2D[] textures, VisualElement headImage, VisualElement chestImage, VisualElement legImage, VisualElement feetImage)
     {
 
-        Texture2D resizedHead = ResizeImage(headImage.style.backgroundImage.value.texture, ((int)headImage.resolvedStyle.width), (int)headImage.resolvedStyle.height);
-        Texture2D resizedChest = ResizeImage(chestImage.style.backgroundImage.value.texture, (int)chestImage.resolvedStyle.width, (int)chestImage.resolvedStyle.height);
-        Texture2D resizedLeg = ResizeImage(legImage.style.backgroundImage.value.texture, (int)legImage.resolvedStyle.width, (int)legImage.resolvedStyle.height);
-        Texture2D resizedFeet = ResizeImage(feetImage.style.backgroundImage.value.texture, (int)feetImage.resolvedStyle.width, (int)feetImage.resolvedStyle.height);
+        Texture2D resizedHead = ResizeImage(textures[0], ((int)headImage.resolvedStyle.width), (int)headImage.resolvedStyle.height);
+        headImage.style.backgroundImage = resizedHead;
+        Texture2D resizedChest = ResizeImage(textures[1], (int)chestImage.resolvedStyle.width, (int)chestImage.resolvedStyle.height);
+        Texture2D resizedLeg = ResizeImage(textures[2], (int)legImage.resolvedStyle.width, (int)legImage.resolvedStyle.height);
+        Texture2D resizedFeet = ResizeImage(textures[3], (int)feetImage.resolvedStyle.width, (int)feetImage.resolvedStyle.height);
 
         int width = resizedChest.width;
         int height = resizedHead.height + resizedChest.height + resizedLeg.height + resizedFeet.height;
