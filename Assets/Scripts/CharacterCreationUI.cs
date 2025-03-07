@@ -80,9 +80,13 @@ public class CharacterCreationUI : MonoBehaviour
         feetListView = root.Q<ListView>("feetlistview");
 
         headDisplay.AddManipulator(new DragManipulator(headDisplay));
+        headDisplay.AddManipulator(new ResizeHandler(headDisplay));
         chestDisplay.AddManipulator(new DragManipulator(chestDisplay));
+        chestDisplay.AddManipulator(new ResizeHandler(chestDisplay));
         legDisplay.AddManipulator(new DragManipulator(legDisplay));
+        legDisplay.AddManipulator(new ResizeHandler(legDisplay));
         feetDisplay.AddManipulator(new DragManipulator(feetDisplay));
+        feetDisplay.AddManipulator(new ResizeHandler(feetDisplay));
 
         fileName = root.Q<TextField>("filename");
 
@@ -125,14 +129,14 @@ public class CharacterCreationUI : MonoBehaviour
         #endregion
 
         #region InitializeListView
-        InitializeListView(headListView, headImages, headDisplay);
-        InitializeListView(chestListView, chestImages, chestDisplay);
-        InitializeListView(legListView, legImages, legDisplay);
-        InitializeListView(feetListView, feetImages, feetDisplay);
+        InitializeListView(headListView, headImages);
+        InitializeListView(chestListView, chestImages);
+        InitializeListView(legListView, legImages);
+        InitializeListView(feetListView, feetImages);
         #endregion
     }
 
-    private void InitializeListView(ListView listView, List<Sprite> sprites, VisualElement visElem)
+    private void InitializeListView(ListView listView, List<Sprite> sprites)
     {
         listView.makeItem = () =>
         {
@@ -193,16 +197,12 @@ public class CharacterCreationUI : MonoBehaviour
             {
                 if (loader.imageCategories[i].imageList.Count == 0)
                 {
-                    Debug.Log("Image folder empty");
                     return;
                 }
 
                 imageCategoryList[i].Add(image);
-                Debug.Log($"Copied{image.name} to {imageCategoryList[i]}");
-                Debug.Log("Lists updated");
             }
         }
-
     }
 
     private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
@@ -218,14 +218,6 @@ public class CharacterCreationUI : MonoBehaviour
     #region ButtonActions
     private void exportButtonClicked()
     {
-        //var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
-        //var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
-        //var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
-        //var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
-
-        //ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
-        //exporter.ExportImage(fileName.value, ImageToExport);
-
         string fullPath = Path.Combine(Application.persistentDataPath, "Exports");
         if (!Directory.Exists(fullPath))
         {
@@ -312,9 +304,7 @@ public class CharacterCreationUI : MonoBehaviour
         for (int i = 0; i < selectedFiles.Length; i++)
         {
             string filePath = selectedFiles[i];
-            Debug.Log(filePath);
             string destinationPath = Path.Combine(selectedFolder, FileBrowserHelpers.GetFilename(filePath));
-            Debug.Log(destinationPath);
             FileBrowserHelpers.CopyFile(filePath, destinationPath);
         }
         loader.LoadAllImages();
@@ -322,11 +312,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     void OnFilesSelected(string[] filePaths, int state)
     {
-        for (int i = 0; i < filePaths.Length; i++)
-            Debug.Log(filePaths[i]);
-
         string filePath = filePaths[0];
-        
 
         if (state == 1) //loading preset
         {
@@ -338,16 +324,12 @@ public class CharacterCreationUI : MonoBehaviour
         }
 
         if (state == 2) //saving preset
-        {
             presetSaver.SaveImagePreset(this, filePath);
-        }
 
         if (state == 3) //importing images
-        {
             StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
-        }
 
-        if(state == 4)
+        if (state == 4) //exporting image
         {
             fileName.value = filePath;
             var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
@@ -355,7 +337,8 @@ public class CharacterCreationUI : MonoBehaviour
             var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
             var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
-            ImageToExport = fuser.FuseImages(headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture);
+            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
+            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
             exporter.ExportImage(fileName.value, ImageToExport);
         }
     }
