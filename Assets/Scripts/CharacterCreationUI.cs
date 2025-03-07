@@ -255,7 +255,17 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 4);
+        {
+            fileName.value = FileBrowser.Result[0];
+            var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+            var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+            var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+            var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
+
+            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
+            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
+            exporter.ExportImage(fileName.value, ImageToExport);
+        }
     }
 
     IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
@@ -275,7 +285,7 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 3);
+            StartCoroutine(ShowSelectFolderDialogCoroutine(FileBrowser.Result));
     }
 
     IEnumerator ShowLoadDialogCoroutine()
@@ -286,7 +296,13 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 1);
+        {
+            presetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            SetImage(headDisplay, headImages, headName);
+            SetImage(chestDisplay, chestImages, chestName);
+            SetImage(legDisplay, legImages, legName);
+            SetImage(feetDisplay, feetImages, feetName);
+        }
     }
 
     IEnumerator ShowSaveDialogCoroutine()
@@ -296,7 +312,7 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 2);
+            presetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
     }
 
     private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)
@@ -308,39 +324,6 @@ public class CharacterCreationUI : MonoBehaviour
             FileBrowserHelpers.CopyFile(filePath, destinationPath);
         }
         loader.LoadAllImages();
-    }
-
-    void OnFilesSelected(string[] filePaths, int state)
-    {
-        string filePath = filePaths[0];
-
-        if (state == 1) //loading preset
-        {
-            presetLoader.LoadImagePreset(this, filePath);
-            SetImage(headDisplay, headImages, headName);
-            SetImage(chestDisplay, chestImages, chestName);
-            SetImage(legDisplay, legImages, legName);
-            SetImage(feetDisplay, feetImages, feetName);
-        }
-
-        if (state == 2) //saving preset
-            presetSaver.SaveImagePreset(this, filePath);
-
-        if (state == 3) //importing images
-            StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
-
-        if (state == 4) //exporting image
-        {
-            fileName.value = filePath;
-            var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
-            var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
-            var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
-            var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
-
-            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
-            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
-            exporter.ExportImage(fileName.value, ImageToExport);
-        }
     }
     #endregion
 
