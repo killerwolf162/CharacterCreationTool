@@ -14,21 +14,18 @@ public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] public string headName, chestName, legName, feetName;
 
-    public TextField fileName { get; private set; }
-
-    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-
-    public ListView headListView, chestListView, legListView, feetListView;
-
-    private Button exportButton, importButton, loadButton, saveButton;
-
-    private Texture2D ImageToExport;
-
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
+
+    public TextField fileName { get; private set; }
+    public ListView headListView, chestListView, legListView, feetListView;
+
+    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
+    private Button exportButton, importButton, loadButton, saveButton;
+    private Texture2D ImageToExport;
 
     private ImageLoader loader;
     private ImageExporter exporter;
@@ -106,7 +103,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void Start()
     {
-        #region SetImagesAtStart
+        /*#region SetImagesAtStart
         UpdateList();
 
         if (headImages.Count > 0)
@@ -126,7 +123,7 @@ public class CharacterCreationUI : MonoBehaviour
             SetImage(legDisplay, legImages, legName);
         if (feetImages.Count > 0)
             SetImage(feetDisplay, feetImages, feetName);
-        #endregion
+        #endregion */
 
         #region InitializeListView
         InitializeListView(headListView, headImages);
@@ -195,11 +192,6 @@ public class CharacterCreationUI : MonoBehaviour
 
             foreach (var image in loader.imageCategories[i].imageList)
             {
-                if (loader.imageCategories[i].imageList.Count == 0)
-                {
-                    return;
-                }
-
                 imageCategoryList[i].Add(image);
             }
         }

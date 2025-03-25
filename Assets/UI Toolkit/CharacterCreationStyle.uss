@@ -6,6 +6,10 @@
     top: 0;
     right: 0;
     bottom: 0;
+    border-left-color: rgb(113, 113, 113);
+    border-right-color: rgb(113, 113, 113);
+    border-top-color: rgb(113, 113, 113);
+    border-bottom-color: rgb(113, 113, 113);
 }
 
 .imagebackgroundcolourTEST {
@@ -18,7 +22,13 @@
     position: relative;
     left: auto;
     top: auto;
-    background-color: rgb(170, 170, 170);
+    background-color: rgb(68, 68, 68);
+    color: rgb(255, 255, 255);
+    border-left-color: rgba(51, 51, 51, 0);
+    border-right-color: rgba(51, 51, 51, 0);
+    border-top-color: rgba(51, 51, 51, 0);
+    border-bottom-color: rgba(51, 51, 51, 0);
+    -unity-font: url("project://database/Assets/Fonts/Poppins-Bold.ttf?fileID=12800000&guid=d56894b192e242b46aecea1efedbde88&type=3#Poppins-Bold");
 }
 
 .utilitybutton:hover {
@@ -27,13 +37,14 @@
     position: relative;
     left: auto;
     top: auto;
-    background-color: rgb(100, 100, 100);
-    border-left-color: rgb(100, 100, 100);
-    border-right-color: rgb(100, 100, 100);
-    border-top-color: rgb(100, 100, 100);
-    border-bottom-color: rgb(100, 100, 100);
+    background-color: rgb(34, 34, 34);
+    border-left-color: rgb(34, 34, 34);
+    border-right-color: rgb(34, 34, 34);
+    border-top-color: rgb(34, 34, 34);
+    border-bottom-color: rgb(34, 34, 34);
     transition-duration: 0.15s;
     transition-delay: 0.05s;
+    cursor: initial;
 }
 
 .utilitybuttonlabel {
@@ -61,4 +72,5 @@
     font-size: 18px;
     align-self: stretch;
     justify-content: center;
+    -unity-font: url("project://database/Assets/Fonts/Poppins-Bold.ttf?fileID=12800000&guid=d56894b192e242b46aecea1efedbde88&type=3#Poppins-Bold");
 }

@@ -204,19 +204,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c63cd4a5d996014e860f6039f3006df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageCategories:
-  - folderName: Heads
-    imageList: []
-    autoReload: 1
-  - folderName: Chests
-    imageList: []
-    autoReload: 1
-  - folderName: Legs
-    imageList: []
-    autoReload: 1
-  - folderName: Feet
-    imageList: []
-    autoReload: 1
+  imageCategories: []
   onImageLoaded:
     m_PersistentCalls:
       m_Calls:
@@ -362,7 +350,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.5849056, g: 0.5849056, b: 0.5849056, a: 1}
+  m_BackGroundColor: {r: 0.2924528, g: 0.2924528, b: 0.2924528, a: 1}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
