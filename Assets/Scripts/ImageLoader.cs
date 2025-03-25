@@ -29,7 +29,7 @@ public class ImageLoader : MonoBehaviour
 
     public UnityEvent onImageLoaded = new UnityEvent();
 
-    void Awake()
+    private void Awake()
     {
         foreach (var category in imageCategories)
         {
@@ -44,7 +44,7 @@ public class ImageLoader : MonoBehaviour
         LoadAllImages();
     }
 
-    void Update()
+    private void Update()
     {
         foreach (var category in imageCategories)
         {
