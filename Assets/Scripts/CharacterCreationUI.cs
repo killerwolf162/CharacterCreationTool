@@ -14,27 +14,40 @@ public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] public string headName, chestName, legName, feetName;
 
-    public TextField fileName { get; private set; }
-
-    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-
-    public ListView headListView, chestListView, legListView, feetListView;
-
-    private Button exportButton, importButton, loadButton, saveButton;
-
-    private Texture2D ImageToExport;
-
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
+    private List<DragManipulator> dragManList = new List<DragManipulator>();
+    private List<ResizeHandler> resHandList = new List<ResizeHandler>();
+
+    public TextField fileName { get; private set; }
+    public ListView headListView, chestListView, legListView, feetListView;
+
+    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
+    private Button exportButton, importButton, loadButton, saveButton, methodButton, scaleModeButton;
+    private Texture2D ImageToExport;
 
     private ImageLoader loader;
     private ImageExporter exporter;
     private PresetSaver presetSaver;
     private PresetLoader presetLoader;
-    private ImageFuser fuser;
+
+    private Method currMethod = Method.move;
+    private ResizeMode currMode = ResizeMode.topLeft;
+
+    private enum Method
+    {
+        move,
+        scale
+    }
+
+    private enum ResizeMode
+    {
+        topLeft,
+        center
+    }
 
     private void Awake()
     {
@@ -57,7 +70,6 @@ public class CharacterCreationUI : MonoBehaviour
         exporter = new ImageExporter();
         presetSaver = new PresetSaver();
         presetLoader = new PresetLoader();
-        fuser = new ImageFuser();
         #endregion
 
         #region UI Init
@@ -68,6 +80,8 @@ public class CharacterCreationUI : MonoBehaviour
         importButton = root.Q<Button>("importbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
+        methodButton = root.Q<Button>("methodselectionbutton");
+        scaleModeButton = root.Q<Button>("scalemodeselectionbutton");
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
@@ -79,14 +93,24 @@ public class CharacterCreationUI : MonoBehaviour
         legListView = root.Q<ListView>("leglistview");
         feetListView = root.Q<ListView>("feetlistview");
 
-        headDisplay.AddManipulator(new DragManipulator(headDisplay));
-        headDisplay.AddManipulator(new ResizeHandler(headDisplay));
-        chestDisplay.AddManipulator(new DragManipulator(chestDisplay));
-        chestDisplay.AddManipulator(new ResizeHandler(chestDisplay));
-        legDisplay.AddManipulator(new DragManipulator(legDisplay));
-        legDisplay.AddManipulator(new ResizeHandler(legDisplay));
-        feetDisplay.AddManipulator(new DragManipulator(feetDisplay));
-        feetDisplay.AddManipulator(new ResizeHandler(feetDisplay));
+        dragManList.Add(new DragManipulator(headDisplay));
+        dragManList.Add(new DragManipulator(chestDisplay));
+        dragManList.Add(new DragManipulator(legDisplay));
+        dragManList.Add(new DragManipulator(feetDisplay));
+
+        resHandList.Add(new ResizeHandler(headDisplay));
+        resHandList.Add(new ResizeHandler(chestDisplay));
+        resHandList.Add(new ResizeHandler(legDisplay));
+        resHandList.Add(new ResizeHandler(feetDisplay));
+
+        headDisplay.AddManipulator(dragManList[0]);
+        headDisplay.AddManipulator(resHandList[0]);
+        chestDisplay.AddManipulator(dragManList[1]);
+        chestDisplay.AddManipulator(resHandList[1]);
+        legDisplay.AddManipulator(dragManList[2]);
+        legDisplay.AddManipulator(resHandList[2]);
+        feetDisplay.AddManipulator(dragManList[3]);
+        feetDisplay.AddManipulator(resHandList[3]);
 
         fileName = root.Q<TextField>("filename");
 
@@ -94,6 +118,10 @@ public class CharacterCreationUI : MonoBehaviour
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
         importButton.clicked += importButtonClicked;
+        methodButton.clicked += methodButtonClicked;
+        scaleModeButton.clicked += scaleModeButtonClicked;
+
+        scaleModeButton.parent.style.display = DisplayStyle.None;
 
         headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
         chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
@@ -106,7 +134,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void Start()
     {
-        #region SetImagesAtStart
+        /*#region SetImagesAtStart
         UpdateList();
 
         if (headImages.Count > 0)
@@ -126,7 +154,7 @@ public class CharacterCreationUI : MonoBehaviour
             SetImage(legDisplay, legImages, legName);
         if (feetImages.Count > 0)
             SetImage(feetDisplay, feetImages, feetName);
-        #endregion
+        #endregion */
 
         #region InitializeListView
         InitializeListView(headListView, headImages);
@@ -134,6 +162,22 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(legListView, legImages);
         InitializeListView(feetListView, feetImages);
         #endregion
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            methodButtonClicked();
+        }
+        if(Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            scaleModeButtonClicked();
+        }
+        if(Input.GetKeyUp(KeyCode.LeftAlt))
+        {
+            scaleModeButtonClicked();
+        }
     }
 
     private void InitializeListView(ListView listView, List<Sprite> sprites)
@@ -195,11 +239,6 @@ public class CharacterCreationUI : MonoBehaviour
 
             foreach (var image in loader.imageCategories[i].imageList)
             {
-                if (loader.imageCategories[i].imageList.Count == 0)
-                {
-                    return;
-                }
-
                 imageCategoryList[i].Add(image);
             }
         }
@@ -216,6 +255,57 @@ public class CharacterCreationUI : MonoBehaviour
     }
 
     #region ButtonActions
+
+    private void methodButtonClicked()
+    {
+        if (currMethod == Method.move)
+        {
+            foreach(var dragMan in dragManList)
+                dragMan.selected = false;
+            foreach (var reszHand in resHandList)
+                reszHand.selected = true;
+
+            scaleModeButton.parent.style.display = DisplayStyle.Flex;
+            methodButton.text = "Method: Scale";
+            currMethod = Method.scale;
+
+            return;
+        }
+        if(currMethod == Method.scale)
+        {
+            foreach (var dragMan in dragManList)
+                dragMan.selected = true;
+            foreach (var reszHand in resHandList)
+                reszHand.selected = false;
+            scaleModeButton.parent.style.display = DisplayStyle.None;
+            methodButton.text = "Method: Move";
+            currMethod = Method.move;
+            return;
+        }
+    }
+
+    private void scaleModeButtonClicked()
+    {
+        if(currMode == ResizeMode.topLeft)
+        {
+            foreach (var reszHand in resHandList)
+                reszHand.altPressed = true;
+            scaleModeButton.text = "Mode: Center";
+
+            currMode = ResizeMode.center;
+            return;
+        }
+        if (currMode == ResizeMode.center)
+        {
+            foreach (var reszHand in resHandList)
+                reszHand.altPressed = false;
+            scaleModeButton.text = "Mode: Default";
+
+            currMode = ResizeMode.topLeft;
+            return;
+        }
+    }
+
     private void exportButtonClicked()
     {
         string fullPath = Path.Combine(Application.persistentDataPath, "Exports");
@@ -255,7 +345,19 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 4);
+        {
+            fileName.value = FileBrowser.Result[0];
+            var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
+            var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
+            var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
+            var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
+
+            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
+            VisualElement[] elements = { headDisplay, chestDisplay, legDisplay, feetDisplay };
+
+            ImageToExport = ImageFuser.FuseImages(textures, elements);
+            exporter.ExportImage(fileName.value, ImageToExport);
+        }
     }
 
     IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
@@ -275,7 +377,7 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 3);
+            StartCoroutine(ShowSelectFolderDialogCoroutine(FileBrowser.Result));
     }
 
     IEnumerator ShowLoadDialogCoroutine()
@@ -286,7 +388,13 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 1);
+        {
+            presetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            SetImage(headDisplay, headImages, headName);
+            SetImage(chestDisplay, chestImages, chestName);
+            SetImage(legDisplay, legImages, legName);
+            SetImage(feetDisplay, feetImages, feetName);
+        }
     }
 
     IEnumerator ShowSaveDialogCoroutine()
@@ -296,7 +404,7 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            OnFilesSelected(FileBrowser.Result, 2);
+            presetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
     }
 
     private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)
@@ -308,39 +416,6 @@ public class CharacterCreationUI : MonoBehaviour
             FileBrowserHelpers.CopyFile(filePath, destinationPath);
         }
         loader.LoadAllImages();
-    }
-
-    void OnFilesSelected(string[] filePaths, int state)
-    {
-        string filePath = filePaths[0];
-
-        if (state == 1) //loading preset
-        {
-            presetLoader.LoadImagePreset(this, filePath);
-            SetImage(headDisplay, headImages, headName);
-            SetImage(chestDisplay, chestImages, chestName);
-            SetImage(legDisplay, legImages, legName);
-            SetImage(feetDisplay, feetImages, feetName);
-        }
-
-        if (state == 2) //saving preset
-            presetSaver.SaveImagePreset(this, filePath);
-
-        if (state == 3) //importing images
-            StartCoroutine(ShowSelectFolderDialogCoroutine(filePaths));
-
-        if (state == 4) //exporting image
-        {
-            fileName.value = filePath;
-            var headIndex = headImages.FindIndex(0, headImages.Count, s => s.name == headName);
-            var chestIndex = chestImages.FindIndex(0, chestImages.Count, s => s.name == chestName);
-            var legIndex = legImages.FindIndex(0, legImages.Count, s => s.name == legName);
-            var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
-
-            Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
-            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
-            exporter.ExportImage(fileName.value, ImageToExport);
-        }
     }
     #endregion
 

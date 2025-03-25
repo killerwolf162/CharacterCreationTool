@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class ImageFuser
+public static class ImageFuser
 {
 
-    public Texture2D FuseImages(Texture2D[] textures, VisualElement headImage, VisualElement chestImage, VisualElement legImage, VisualElement feetImage)
+    public static Texture2D FuseImages(Texture2D[] textures, VisualElement[] elements)
     {
+        List<(VisualElement element, Texture2D texture)> visElements = new List<(VisualElement element, Texture2D texture)>();
 
-        List<(VisualElement element, Texture2D texture)> visElements = new List<(VisualElement element, Texture2D texture)>()
+        foreach (var texture in textures)
         {
-            (headImage, textures[0]),
-            (chestImage, textures[1]),
-            (legImage, textures[2]),
-            (feetImage, textures[3])
-        };
+            foreach(var element in elements)
+            {
+                visElements.Add((element, texture));
+            }
+        }
 
         List<(VisualElement element, Texture2D resizedTexture, Vector2 position)> resizedElements =
             new List<(VisualElement, Texture2D, Vector2)>();
