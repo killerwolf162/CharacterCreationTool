@@ -3,6 +3,8 @@ using UnityEngine.UIElements;
 
 public class ResizeHandler : PointerManipulator
 {
+    public bool selected;
+    public bool altPressed;
     private Vector2 startMousePosition;
     private Vector2 startPanelSize;
     private Vector2 startPanelPosition;
@@ -11,6 +13,8 @@ public class ResizeHandler : PointerManipulator
     public ResizeHandler(VisualElement target)
     {
         this.target = target;
+        selected = false;
+        altPressed = false;
     }
 
     protected override void RegisterCallbacksOnTarget()
@@ -29,7 +33,7 @@ public class ResizeHandler : PointerManipulator
 
     private void OnStartResize(MouseDownEvent evt)
     {
-        if (evt.button == 1)
+        if (evt.button == 0 && selected == true)
         {
             startMousePosition = evt.mousePosition;
             startPanelSize = new Vector2(target.resolvedStyle.width, target.resolvedStyle.height);
@@ -49,7 +53,7 @@ public class ResizeHandler : PointerManipulator
 
         Vector2 delta = evt.mousePosition - startMousePosition;
 
-        if (evt.altKey) // scale from center when alt is pressed
+        if (altPressed == true) // scale from center when alt is pressed
         {
             float newWidth = Mathf.Max(50, startPanelSize.x + (delta.x * 2));
             float newHeight = Mathf.Max(50, startPanelSize.y + (delta.y * 2));

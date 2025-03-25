@@ -13,6 +13,12 @@
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveBackground" class="utilitybuttonlabel" style="background-color: rgb(51, 51, 51);">
         <ui:Button text="Save Preset" name="savebutton" class="utilitybutton" />
     </ui:Label>
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MethodSelectionBackground" class="utilitybuttonlabel" style="left: 0; top: 50px; background-color: rgb(51, 51, 51);">
+        <ui:Button text="Method: Move" parse-escape-sequences="true" display-tooltip-when-elided="true" name="methodselectionbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
+    </ui:Label>
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ScaleModeBackground" class="utilitybuttonlabel" style="left: 150px; top: 50px; background-color: rgb(51, 51, 51);">
+        <ui:Button text="Mode: center" parse-escape-sequences="true" display-tooltip-when-elided="true" name="scalemodeselectionbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
+    </ui:Label>
     <ui:Label tabindex="-1" text="Heads" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Heads" class="listViewMakeUp" style="top: 100px; background-color: rgb(68, 68, 68); color: rgb(255, 255, 255);">
         <ui:ListView name="headlistview" style="position: absolute; max-height: 1000px; width: 150px; height: 200px; top: 100%; left: 0; background-color: rgba(0, 0, 0, 0.27);" />
     </ui:Label>

@@ -3,6 +3,7 @@ using UnityEngine.UIElements;
 
 public class DragManipulator : PointerManipulator
 {
+    public bool selected;
     private Vector2 startPosition;
     private Vector3 pointerStartPosition;
     private bool enabled;
@@ -10,6 +11,7 @@ public class DragManipulator : PointerManipulator
     public DragManipulator(VisualElement target)
     {
         this.target = target;
+        selected = true;
     }
 
     protected override void RegisterCallbacksOnTarget()
@@ -30,7 +32,7 @@ public class DragManipulator : PointerManipulator
 
     private void PointerDownHandler(PointerDownEvent evt)
     {
-        if(evt.button == 0)
+        if(evt.button == 0 && selected == true)
         {
             startPosition = target.transform.position;
             pointerStartPosition = evt.position;

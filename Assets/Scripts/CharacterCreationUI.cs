@@ -19,12 +19,14 @@ public class CharacterCreationUI : MonoBehaviour
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
+    private List<DragManipulator> dragManList = new List<DragManipulator>();
+    private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
     public TextField fileName { get; private set; }
     public ListView headListView, chestListView, legListView, feetListView;
 
     private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-    private Button exportButton, importButton, loadButton, saveButton;
+    private Button exportButton, importButton, loadButton, saveButton, methodButton, scaleModeButton;
     private Texture2D ImageToExport;
 
     private ImageLoader loader;
@@ -32,6 +34,21 @@ public class CharacterCreationUI : MonoBehaviour
     private PresetSaver presetSaver;
     private PresetLoader presetLoader;
     private ImageFuser fuser;
+
+    private Method currMethod = Method.move;
+    private ResizeMode currMode = ResizeMode.topLeft;
+
+    private enum Method
+    {
+        move,
+        scale
+    }
+
+    private enum ResizeMode
+    {
+        topLeft,
+        center
+    }
 
     private void Awake()
     {
@@ -65,6 +82,8 @@ public class CharacterCreationUI : MonoBehaviour
         importButton = root.Q<Button>("importbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
+        methodButton = root.Q<Button>("methodselectionbutton");
+        scaleModeButton = root.Q<Button>("scalemodeselectionbutton");
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
@@ -76,14 +95,24 @@ public class CharacterCreationUI : MonoBehaviour
         legListView = root.Q<ListView>("leglistview");
         feetListView = root.Q<ListView>("feetlistview");
 
-        headDisplay.AddManipulator(new DragManipulator(headDisplay));
-        headDisplay.AddManipulator(new ResizeHandler(headDisplay));
-        chestDisplay.AddManipulator(new DragManipulator(chestDisplay));
-        chestDisplay.AddManipulator(new ResizeHandler(chestDisplay));
-        legDisplay.AddManipulator(new DragManipulator(legDisplay));
-        legDisplay.AddManipulator(new ResizeHandler(legDisplay));
-        feetDisplay.AddManipulator(new DragManipulator(feetDisplay));
-        feetDisplay.AddManipulator(new ResizeHandler(feetDisplay));
+        dragManList.Add(new DragManipulator(headDisplay));
+        dragManList.Add(new DragManipulator(chestDisplay));
+        dragManList.Add(new DragManipulator(legDisplay));
+        dragManList.Add(new DragManipulator(feetDisplay));
+
+        resHandList.Add(new ResizeHandler(headDisplay));
+        resHandList.Add(new ResizeHandler(chestDisplay));
+        resHandList.Add(new ResizeHandler(legDisplay));
+        resHandList.Add(new ResizeHandler(feetDisplay));
+
+        headDisplay.AddManipulator(dragManList[0]);
+        headDisplay.AddManipulator(resHandList[0]);
+        chestDisplay.AddManipulator(dragManList[1]);
+        chestDisplay.AddManipulator(resHandList[1]);
+        legDisplay.AddManipulator(dragManList[2]);
+        legDisplay.AddManipulator(resHandList[2]);
+        feetDisplay.AddManipulator(dragManList[3]);
+        feetDisplay.AddManipulator(resHandList[3]);
 
         fileName = root.Q<TextField>("filename");
 
@@ -91,6 +120,10 @@ public class CharacterCreationUI : MonoBehaviour
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
         importButton.clicked += importButtonClicked;
+        methodButton.clicked += methodButtonClicked;
+        scaleModeButton.clicked += scaleModeButtonClicked;
+
+        scaleModeButton.parent.style.display = DisplayStyle.None;
 
         headListView.selectionChanged += (items) => OnSelectionChanged(headListView, headImages, headDisplay, ref headName);
         chestListView.selectionChanged += (items) => OnSelectionChanged(chestListView, chestImages, chestDisplay, ref chestName);
@@ -131,6 +164,22 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(legListView, legImages);
         InitializeListView(feetListView, feetImages);
         #endregion
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            methodButtonClicked();
+        }
+        if(Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            scaleModeButtonClicked();
+        }
+        if(Input.GetKeyUp(KeyCode.LeftAlt))
+        {
+            scaleModeButtonClicked();
+        }
     }
 
     private void InitializeListView(ListView listView, List<Sprite> sprites)
@@ -208,6 +257,57 @@ public class CharacterCreationUI : MonoBehaviour
     }
 
     #region ButtonActions
+
+    private void methodButtonClicked()
+    {
+        if (currMethod == Method.move)
+        {
+            foreach(var dragMan in dragManList)
+                dragMan.selected = false;
+            foreach (var reszHand in resHandList)
+                reszHand.selected = true;
+
+            scaleModeButton.parent.style.display = DisplayStyle.Flex;
+            methodButton.text = "Method: Scale";
+            currMethod = Method.scale;
+
+            return;
+        }
+        if(currMethod == Method.scale)
+        {
+            foreach (var dragMan in dragManList)
+                dragMan.selected = true;
+            foreach (var reszHand in resHandList)
+                reszHand.selected = false;
+            scaleModeButton.parent.style.display = DisplayStyle.None;
+            methodButton.text = "Method: Move";
+            currMethod = Method.move;
+            return;
+        }
+    }
+
+    private void scaleModeButtonClicked()
+    {
+        if(currMode == ResizeMode.topLeft)
+        {
+            foreach (var reszHand in resHandList)
+                reszHand.altPressed = true;
+            scaleModeButton.text = "Mode: Center";
+
+            currMode = ResizeMode.center;
+            return;
+        }
+        if (currMode == ResizeMode.center)
+        {
+            foreach (var reszHand in resHandList)
+                reszHand.altPressed = false;
+            scaleModeButton.text = "Mode: Default";
+
+            currMode = ResizeMode.topLeft;
+            return;
+        }
+    }
+
     private void exportButtonClicked()
     {
         string fullPath = Path.Combine(Application.persistentDataPath, "Exports");
