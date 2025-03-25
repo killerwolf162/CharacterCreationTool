@@ -204,7 +204,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0c63cd4a5d996014e860f6039f3006df, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageCategories: []
+  imageCategories:
+  - folderName: Heads
+    imageList: []
+    autoReload: 1
+  - folderName: Chest
+    imageList: []
+    autoReload: 1
+  - folderName: Legs
+    imageList: []
+    autoReload: 1
+  - folderName: Feet
+    imageList: []
+    autoReload: 1
   onImageLoaded:
     m_PersistentCalls:
       m_Calls:
