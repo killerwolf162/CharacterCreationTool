@@ -31,8 +31,6 @@ public class CharacterCreationUI : MonoBehaviour
 
     private ImageLoader loader;
     private ImageExporter exporter;
-    private PresetSaver presetSaver;
-    private PresetLoader presetLoader;
 
     private Method currMethod = Method.move;
     private ResizeMode currMode = ResizeMode.topLeft;
@@ -68,8 +66,6 @@ public class CharacterCreationUI : MonoBehaviour
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
         exporter = new ImageExporter();
-        presetSaver = new PresetSaver();
-        presetLoader = new PresetLoader();
         #endregion
 
         #region UI Init
@@ -389,7 +385,7 @@ public class CharacterCreationUI : MonoBehaviour
 
         if (FileBrowser.Success)
         {
-            presetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            PresetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
             SetImage(headDisplay, headImages, headName);
             SetImage(chestDisplay, chestImages, chestName);
             SetImage(legDisplay, legImages, legName);
@@ -404,7 +400,7 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            presetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
+            PresetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
     }
 
     private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)

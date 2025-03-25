@@ -5,18 +5,13 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
-public class PresetSaver
+public static class PresetSaver
 {
 
-    private XmlSerializer xmlSerializer;
-    private ImagePreset preset;
+    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(ImagePreset));
+    private static ImagePreset preset = new ImagePreset();
 
-    public PresetSaver()
-    {
-        xmlSerializer = new XmlSerializer(typeof(ImagePreset));
-    }
-
-    public void SaveImagePreset(CharacterCreationUI UI, string destinationPath)
+    public static void SaveImagePreset(CharacterCreationUI UI, string destinationPath)
     {
         FileStream fileStream = null;
         ApplyChanges(UI);
@@ -38,7 +33,7 @@ public class PresetSaver
         }
     }
 
-    private void ApplyChanges(CharacterCreationUI UI)
+    private static void ApplyChanges(CharacterCreationUI UI)
     {
         if (preset == null) preset = new ImagePreset();
         preset.headName = UI.headName;
