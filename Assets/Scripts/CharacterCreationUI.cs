@@ -33,7 +33,6 @@ public class CharacterCreationUI : MonoBehaviour
     private ImageExporter exporter;
     private PresetSaver presetSaver;
     private PresetLoader presetLoader;
-    private ImageFuser fuser;
 
     private Method currMethod = Method.move;
     private ResizeMode currMode = ResizeMode.topLeft;
@@ -71,7 +70,6 @@ public class CharacterCreationUI : MonoBehaviour
         exporter = new ImageExporter();
         presetSaver = new PresetSaver();
         presetLoader = new PresetLoader();
-        fuser = new ImageFuser();
         #endregion
 
         #region UI Init
@@ -355,7 +353,9 @@ public class CharacterCreationUI : MonoBehaviour
             var feetIndex = feetImages.FindIndex(0, feetImages.Count, s => s.name == feetName);
 
             Texture2D[] textures = { headImages[headIndex].texture, chestImages[chestIndex].texture, legImages[legIndex].texture, feetImages[feetIndex].texture };
-            ImageToExport = fuser.FuseImages(textures, headDisplay, chestDisplay, legDisplay, feetDisplay);
+            VisualElement[] elements = { headDisplay, chestDisplay, legDisplay, feetDisplay };
+
+            ImageToExport = ImageFuser.FuseImages(textures, elements);
             exporter.ExportImage(fileName.value, ImageToExport);
         }
     }
