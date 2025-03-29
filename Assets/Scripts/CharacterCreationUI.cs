@@ -3,11 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Runtime.Serialization;
 using UnityEngine.UIElements;
-using System.Xml.Serialization;
-using UnityEngine.Events;
 using SimpleFileBrowser;
 
 public class CharacterCreationUI : MonoBehaviour
@@ -30,16 +26,13 @@ public class CharacterCreationUI : MonoBehaviour
     private Texture2D ImageToExport;
 
     private ImageLoader loader;
-    private ImageExporter exporter;
-    private PresetSaver presetSaver;
-    private PresetLoader presetLoader;
 
-    private Method currMethod = Method.move;
+    private Method currMethod = Method.drag;
     private ResizeMode currMode = ResizeMode.topLeft;
 
     private enum Method
     {
-        move,
+        drag,
         scale
     }
 
@@ -67,9 +60,6 @@ public class CharacterCreationUI : MonoBehaviour
         #region Load&Save&Export
         loader = GetComponent<ImageLoader>();
         loader.onImageLoaded.AddListener(UpdateList);
-        exporter = new ImageExporter();
-        presetSaver = new PresetSaver();
-        presetLoader = new PresetLoader();
         #endregion
 
         #region UI Init
@@ -134,7 +124,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void Start()
     {
-        /*#region SetImagesAtStart
+        #region SetImagesAtStart
         UpdateList();
 
         if (headImages.Count > 0)
@@ -154,7 +144,7 @@ public class CharacterCreationUI : MonoBehaviour
             SetImage(legDisplay, legImages, legName);
         if (feetImages.Count > 0)
             SetImage(feetDisplay, feetImages, feetName);
-        #endregion */
+        #endregion
 
         #region InitializeListView
         InitializeListView(headListView, headImages);
@@ -170,11 +160,11 @@ public class CharacterCreationUI : MonoBehaviour
         {
             methodButtonClicked();
         }
-        if(Input.GetKeyDown(KeyCode.LeftAlt))
+        if(Input.GetKeyDown(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
-        if(Input.GetKeyUp(KeyCode.LeftAlt))
+        if(Input.GetKeyUp(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
@@ -256,9 +246,9 @@ public class CharacterCreationUI : MonoBehaviour
 
     #region ButtonActions
 
-    private void methodButtonClicked()
+    private void methodButtonClicked() // swap functionality of mouse 0 -> drag to scale and reverse
     {
-        if (currMethod == Method.move)
+        if (currMethod == Method.drag)
         {
             foreach(var dragMan in dragManList)
                 dragMan.selected = false;
@@ -279,7 +269,7 @@ public class CharacterCreationUI : MonoBehaviour
                 reszHand.selected = false;
             scaleModeButton.parent.style.display = DisplayStyle.None;
             methodButton.text = "Method: Move";
-            currMethod = Method.move;
+            currMethod = Method.drag;
             return;
         }
     }
@@ -339,7 +329,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     #region SFB functions
 
-    IEnumerator ShowExportDialogCoroutine()
+    private IEnumerator ShowExportDialogCoroutine()
     {
         yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select folder", "Export");
         Debug.Log(FileBrowser.Success);
@@ -356,11 +346,11 @@ public class CharacterCreationUI : MonoBehaviour
             VisualElement[] elements = { headDisplay, chestDisplay, legDisplay, feetDisplay };
 
             ImageToExport = ImageFuser.FuseImages(textures, elements);
-            exporter.ExportImage(fileName.value, ImageToExport);
+            ImageExporter.ExportImage(fileName.value, ImageToExport);
         }
     }
 
-    IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
+    private IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
     {
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, Application.persistentDataPath, null, "Select folder", "Import");
         Debug.Log(FileBrowser.Success);
@@ -369,7 +359,7 @@ public class CharacterCreationUI : MonoBehaviour
             ImportSelectedImages(FileBrowser.Result[0], filePaths);
     }
 
-    IEnumerator ShowImportDialogCoroutine()
+    private IEnumerator ShowImportDialogCoroutine()
     {
         FileBrowser.SetDefaultFilter(".png");
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, "C:\\", null, "Select Files", "Select");
@@ -380,7 +370,7 @@ public class CharacterCreationUI : MonoBehaviour
             StartCoroutine(ShowSelectFolderDialogCoroutine(FileBrowser.Result));
     }
 
-    IEnumerator ShowLoadDialogCoroutine()
+    private IEnumerator ShowLoadDialogCoroutine()
     {
         FileBrowser.SetDefaultFilter(".xml");
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to load", "Load");
@@ -389,7 +379,7 @@ public class CharacterCreationUI : MonoBehaviour
 
         if (FileBrowser.Success)
         {
-            presetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            PresetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
             SetImage(headDisplay, headImages, headName);
             SetImage(chestDisplay, chestImages, chestName);
             SetImage(legDisplay, legImages, legName);
@@ -397,14 +387,14 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    IEnumerator ShowSaveDialogCoroutine()
+    private IEnumerator ShowSaveDialogCoroutine()
     {
         FileBrowser.SetDefaultFilter(".xml");
         yield return FileBrowser.WaitForSaveDialog(FileBrowser.PickMode.Files, false, Application.persistentDataPath, null, "Select File to save", "Save");
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            presetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
+            PresetSaver.SaveImagePreset(this, FileBrowser.Result[0]);
     }
 
     private void ImportSelectedImages(string selectedFolder, string[] selectedFiles)

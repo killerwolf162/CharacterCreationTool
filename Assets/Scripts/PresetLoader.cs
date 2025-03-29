@@ -5,17 +5,12 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
 
-public class PresetLoader
+public static class PresetLoader
 {
 
-    private XmlSerializer xmlSerializer;
+    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(ImagePreset));
 
-    public PresetLoader()
-    {
-        xmlSerializer = new XmlSerializer(typeof(ImagePreset));
-    }
-
-    public void LoadImagePreset(CharacterCreationUI UI, string destinationPath)
+    public static void LoadImagePreset(CharacterCreationUI UI, string destinationPath)
     {
         FileStream fileStream = null;
 
@@ -43,7 +38,7 @@ public class PresetLoader
 
     }
 
-    private void SetPreset(CharacterCreationUI UI, ImagePreset preset)
+    private static void SetPreset(CharacterCreationUI UI, ImagePreset preset)
     {
         UI.headName = preset.headName;
         UI.chestName = preset.chestName;

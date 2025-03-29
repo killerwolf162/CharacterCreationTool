@@ -1,9 +1,9 @@
 using UnityEngine;
 using System.IO;
 
-public class ImageExporter
+public static class ImageExporter
 {
-    public void ExportImage(string fileName, Texture2D textureToExport)
+    public static void ExportImage(string fileName, Texture2D textureToExport)
     {
         fileName = fileName + ".png";
         if (textureToExport == null)
