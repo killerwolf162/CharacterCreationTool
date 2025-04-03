@@ -10,12 +10,14 @@ public static class ImageFuser
     {
         List<(VisualElement element, Texture2D texture)> visElements = new List<(VisualElement element, Texture2D texture)>();
 
-        foreach (var texture in textures)
+        Debug.Log(textures.Length);
+        Debug.Log(elements.Length);
+
+        for (int i = 0; i < textures.Length; i++)
         {
-            foreach(var element in elements)
-            {
-                visElements.Add((element, texture));
-            }
+            Debug.Log(elements[i].name);
+            Debug.Log(textures[i].name);
+            visElements.Add((elements[i], textures[i]));
         }
 
         List<(VisualElement element, Texture2D resizedTexture, Vector2 position)> resizedElements =
