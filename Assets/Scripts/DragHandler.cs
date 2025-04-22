@@ -1,14 +1,14 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DragManipulator : PointerManipulator
+public class DragHandler : PointerManipulator
 {
     public bool selected;
     private Vector2 startPosition;
     private Vector3 pointerStartPosition;
     private bool enabled;
 
-    public DragManipulator(VisualElement target)
+    public DragHandler(VisualElement target)
     {
         this.target = target;
         selected = true;

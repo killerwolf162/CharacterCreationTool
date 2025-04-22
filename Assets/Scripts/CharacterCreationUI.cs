@@ -21,7 +21,7 @@ public class CharacterCreationUI : MonoBehaviour
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
     private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
 
-    private List<DragManipulator> dragManList = new List<DragManipulator>();
+    private List<DragHandler> dragManList = new List<DragHandler>();
     private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
     private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
@@ -93,10 +93,10 @@ public class CharacterCreationUI : MonoBehaviour
         legListView = root.Q<ListView>("leglistview");
         feetListView = root.Q<ListView>("feetlistview");
 
-        dragManList.Add(new DragManipulator(headDisplay));
-        dragManList.Add(new DragManipulator(chestDisplay));
-        dragManList.Add(new DragManipulator(legDisplay));
-        dragManList.Add(new DragManipulator(feetDisplay));
+        dragManList.Add(new DragHandler(headDisplay));
+        dragManList.Add(new DragHandler(chestDisplay));
+        dragManList.Add(new DragHandler(legDisplay));
+        dragManList.Add(new DragHandler(feetDisplay));
 
         resHandList.Add(new ResizeHandler(headDisplay));
         resHandList.Add(new ResizeHandler(chestDisplay));
