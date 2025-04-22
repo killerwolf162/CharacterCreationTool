@@ -9,20 +9,24 @@ using SimpleFileBrowser;
 public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] public string headName, chestName, legName, feetName;
+    public TextField fileName { get; private set; }
+    public ListView headListView, chestListView, legListView, feetListView;
 
-    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
+    public List<string> imageNames = new List<string>();
+    public List<VisualElement> displayList = new List<VisualElement>();
+  
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
+    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
+
     private List<DragManipulator> dragManList = new List<DragManipulator>();
     private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
-    public TextField fileName { get; private set; }
-    public ListView headListView, chestListView, legListView, feetListView;
-
     private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-    private Button exportButton, importButton, loadButton, saveButton, methodButton, scaleModeButton;
+    private Button exportButton, importHeadButton, importChestButton, importLegsButton, importFeetButton, loadButton, saveButton, methodButton, scaleModeButton;
+    private Foldout importFoldout;
     private Texture2D ImageToExport;
 
     private ImageLoader loader;
@@ -67,11 +71,17 @@ public class CharacterCreationUI : MonoBehaviour
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         exportButton = root.Q<Button>("exportbutton");
-        importButton = root.Q<Button>("importbutton");
+        importHeadButton = root.Q<Button>("importheadbutton");
+        importChestButton = root.Q<Button>("importchestbutton");
+        importLegsButton = root.Q<Button>("importlegsbutton");
+        importFeetButton = root.Q<Button>("importfeetbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
         methodButton = root.Q<Button>("methodselectionbutton");
         scaleModeButton = root.Q<Button>("scalemodeselectionbutton");
+
+        importFoldout = root.Q<Foldout>("importfoldout");
+        importFoldout.value = false;
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
@@ -107,7 +117,10 @@ public class CharacterCreationUI : MonoBehaviour
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
-        importButton.clicked += importButtonClicked;
+        importHeadButton.clicked += importHeadButtonClicked;
+        importChestButton.clicked += importChestButtonClicked;
+        importLegsButton.clicked += importLegsButtonClicked;
+        importFeetButton.clicked += importFeetButtonClicked;
         methodButton.clicked += methodButtonClicked;
         scaleModeButton.clicked += scaleModeButtonClicked;
 
@@ -151,20 +164,23 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(chestListView, chestImages);
         InitializeListView(legListView, legImages);
         InitializeListView(feetListView, feetImages);
+
+        imageNames.AddRange(new[] { headName, chestName, legName, feetName });
+        displayList.AddRange(new[] { headDisplay, chestDisplay, legDisplay, feetDisplay });
         #endregion
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             methodButtonClicked();
         }
-        if(Input.GetKeyDown(KeyCode.LeftAlt) && currMethod == Method.scale)
+        if (Input.GetKeyDown(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
-        if(Input.GetKeyUp(KeyCode.LeftAlt) && currMethod == Method.scale)
+        if (Input.GetKeyUp(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
@@ -234,7 +250,7 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
+    public void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
         var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
         if (spriteList[index] == null)
@@ -250,7 +266,7 @@ public class CharacterCreationUI : MonoBehaviour
     {
         if (currMethod == Method.drag)
         {
-            foreach(var dragMan in dragManList)
+            foreach (var dragMan in dragManList)
                 dragMan.selected = false;
             foreach (var reszHand in resHandList)
                 reszHand.selected = true;
@@ -261,7 +277,7 @@ public class CharacterCreationUI : MonoBehaviour
 
             return;
         }
-        if(currMethod == Method.scale)
+        if (currMethod == Method.scale)
         {
             foreach (var dragMan in dragManList)
                 dragMan.selected = true;
@@ -276,7 +292,7 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void scaleModeButtonClicked()
     {
-        if(currMode == ResizeMode.topLeft)
+        if (currMode == ResizeMode.topLeft)
         {
             foreach (var reszHand in resHandList)
                 reszHand.altPressed = true;
@@ -306,9 +322,24 @@ public class CharacterCreationUI : MonoBehaviour
         StartCoroutine(ShowExportDialogCoroutine());
     }
 
-    private void importButtonClicked()
+    private void importHeadButtonClicked()
     {
-        StartCoroutine(ShowImportDialogCoroutine());
+        StartCoroutine(ShowImportDialogCoroutine("Heads"));
+    }
+
+    private void importChestButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Chest"));
+    }
+
+    private void importLegsButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Legs"));
+    }
+
+    private void importFeetButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Feet"));
     }
 
     private void loadButtonClicked()
@@ -318,6 +349,11 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void saveButtonClicked()
     {
+        imageNames[0] = headName;
+        imageNames[1] = chestName;
+        imageNames[2] = legName;
+        imageNames[3] = feetName;
+
         string fullPath = Path.Combine(Application.persistentDataPath, "Presets");
         if (!Directory.Exists(fullPath))
         {
@@ -350,7 +386,7 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    private IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
+    private IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths, string folderName)
     {
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, Application.persistentDataPath, null, "Select folder", "Import");
         Debug.Log(FileBrowser.Success);
@@ -359,7 +395,7 @@ public class CharacterCreationUI : MonoBehaviour
             ImportSelectedImages(FileBrowser.Result[0], filePaths);
     }
 
-    private IEnumerator ShowImportDialogCoroutine()
+    private IEnumerator ShowImportDialogCoroutine(string folderName)
     {
         FileBrowser.SetDefaultFilter(".png");
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, "C:\\", null, "Select Files", "Select");
@@ -367,7 +403,14 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            StartCoroutine(ShowSelectFolderDialogCoroutine(FileBrowser.Result));
+        {
+            Debug.Log($"Foldername: " + folderName);
+            foreach(var item in FileBrowser.Result)
+            {
+                Debug.Log($"item name: " + item);
+            }
+            ImportSelectedImages(folderName, FileBrowser.Result);
+        }          
     }
 
     private IEnumerator ShowLoadDialogCoroutine()
@@ -379,7 +422,11 @@ public class CharacterCreationUI : MonoBehaviour
 
         if (FileBrowser.Success)
         {
-            PresetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            PresetLoader.LoadImagePreset(this, FileBrowser.Result[0]); 
+            headName = imageNames[0]; // reset images to be loaded correctly
+            chestName = imageNames[1];
+            legName = imageNames[2];
+            feetName = imageNames[3];
             SetImage(headDisplay, headImages, headName);
             SetImage(chestDisplay, chestImages, chestName);
             SetImage(legDisplay, legImages, legName);
@@ -402,7 +449,10 @@ public class CharacterCreationUI : MonoBehaviour
         for (int i = 0; i < selectedFiles.Length; i++)
         {
             string filePath = selectedFiles[i];
-            string destinationPath = Path.Combine(selectedFolder, FileBrowserHelpers.GetFilename(filePath));
+            string root = Path.Combine(Application.persistentDataPath, selectedFolder);
+            string destinationPath = Path.Combine(root, FileBrowserHelpers.GetFilename(filePath));
+            Debug.Log($"destinationPath: " + destinationPath);
+
             FileBrowserHelpers.CopyFile(filePath, destinationPath);
         }
         loader.LoadAllImages();

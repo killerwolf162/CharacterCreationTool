@@ -8,18 +8,23 @@ using System.Runtime.Serialization;
 public static class PresetSaver
 {
 
-    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(ImagePreset));
-    private static ImagePreset preset = new ImagePreset();
+    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(CharacterPreset));
 
     public static void SaveImagePreset(CharacterCreationUI UI, string destinationPath)
     {
-        FileStream fileStream = null;
-        ApplyChanges(UI);
+        CharacterPreset characterPreset = new CharacterPreset();
 
+        for (int i = 0; i < UI.imageNames.Count; i++)
+        {
+            characterPreset.imageList.Add(new ImagePreset());
+        }
+
+        FileStream fileStream = null;
+        ApplyChanges(UI, characterPreset);     
         try
         {
             fileStream = File.Create(destinationPath);
-            xmlSerializer.Serialize(fileStream, preset);
+            xmlSerializer.Serialize(fileStream, characterPreset);
             fileStream.Flush();
             Debug.Log($"Image exported successfully to: {destinationPath}");
         }
@@ -33,13 +38,20 @@ public static class PresetSaver
         }
     }
 
-    private static void ApplyChanges(CharacterCreationUI UI)
+    private static void ApplyChanges(CharacterCreationUI UI, CharacterPreset characterPreset)
     {
-        if (preset == null) preset = new ImagePreset();
-        preset.headName = UI.headName;
-        preset.chestName = UI.chestName;
-        preset.legName = UI.legName;
-        preset.feetName = UI.feetName;
+        int imageCount = Mathf.Min(UI.imageNames.Count, characterPreset.imageList.Count);
+
+        for (int i = 0; i < UI.imageNames.Count; i++)
+        {
+            characterPreset.imageList[i].imageName = UI.imageNames[i]; //Set image name
+
+            var style = UI.displayList[i].resolvedStyle;
+            characterPreset.imageList[i].xPos = (int)style.left; // set position
+            characterPreset.imageList[i].yPos = (int)style.top;
+            characterPreset.imageList[i].width = (int)style.width; // set size
+            characterPreset.imageList[i].height = (int)style.height;
+        }
     }
 }
 

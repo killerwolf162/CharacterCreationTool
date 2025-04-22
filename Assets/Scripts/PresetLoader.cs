@@ -4,11 +4,12 @@ using UnityEngine;
 using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization;
+using UnityEngine.UIElements;
 
 public static class PresetLoader
 {
 
-    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(ImagePreset));
+    private static readonly XmlSerializer xmlSerializer = new XmlSerializer(typeof(CharacterPreset));
 
     public static void LoadImagePreset(CharacterCreationUI UI, string destinationPath)
     {
@@ -16,14 +17,8 @@ public static class PresetLoader
 
         try
         {
-            //string directoryPath = Path.Combine(Application.persistentDataPath, "Presets");
-            //if (!Directory.Exists(directoryPath))
-            //    Debug.Log("No Preset Directory");
-
-            //string filePath = Path.Combine(directoryPath, UI.fileName.text + ".xml");
             fileStream = File.OpenRead(destinationPath);
-            ImagePreset preset = (ImagePreset)xmlSerializer.Deserialize(fileStream);
-
+            CharacterPreset preset = (CharacterPreset)xmlSerializer.Deserialize(fileStream);
             SetPreset(UI, preset);
 
         }
@@ -38,11 +33,22 @@ public static class PresetLoader
 
     }
 
-    private static void SetPreset(CharacterCreationUI UI, ImagePreset preset)
+    private static void SetPreset(CharacterCreationUI UI, CharacterPreset loadedPreset)
     {
-        UI.headName = preset.headName;
-        UI.chestName = preset.chestName;
-        UI.legName = preset.legName;
-        UI.feetName = preset.feetName;
+        int imageCount = Mathf.Min(UI.imageNames.Count, loadedPreset.imageList.Count);
+
+        for (int i = 0; i < imageCount; i++)
+        {
+            ImagePreset imagePreset = loadedPreset.imageList[i];
+
+            UI.imageNames[i] = imagePreset.imageName; // set image name
+            
+            VisualElement element = UI.displayList[i];
+
+            element.style.left = imagePreset.xPos; // set position
+            element.style.top = imagePreset.yPos;
+            element.style.width = imagePreset.width; //set size
+            element.style.height = imagePreset.height;
+        }
     }
 }
