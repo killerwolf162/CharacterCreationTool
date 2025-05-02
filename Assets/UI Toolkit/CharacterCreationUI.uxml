@@ -1,5 +1,27 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
     <Style src="project://database/Assets/UI%20Toolkit/CharacterCreationStyle.uss?fileID=7433441132597879392&amp;guid=316df77569964bc4889ee3efc9164ca3&amp;type=3#CharacterCreationStyle" />
+    <ui:VisualElement name="headdisplay" class="imagedisplays imagebackgroundcolourTEST" style="left: 800px; background-image: none; width: 125px; height: 125px; position: absolute; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; top: 0; right: 277px; bottom: 526px;" />
+    <ui:VisualElement name="chestdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; left: 760px; top: 125px; width: 200px; height: 200px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 243px; bottom: 356px;" />
+    <ui:VisualElement name="legdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; height: 200px; left: 800px; top: 325px; width: 125px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 283px; bottom: 137px;" />
+    <ui:VisualElement name="feetdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; height: 50px; left: 800px; top: 525px; width: 125px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 284px; bottom: 87px;" />
+    <ui:VisualElement name="setimagesizedisplay" class="imagedisplays imagebackgroundcolourTEST" style="left: 405px; top: 185px; background-color: rgb(51, 51, 51); border-top-width: 4px; border-right-width: 4px; border-bottom-width: 4px; border-left-width: 4px; right: 500px; bottom: 97px; width: auto; height: 130px; flex-shrink: 0; align-items: stretch; justify-content: flex-start; align-self: auto;">
+        <ui:Foldout text="Head Size" name="headsizefoldout" class="input-value-foldout">
+            <ui:IntegerField name="headsizewidthfield" label="Width" class="input-value-child" />
+            <ui:IntegerField label="Height" value="0" name="headsizeheightfield" class="input-value-child" />
+        </ui:Foldout>
+        <ui:Foldout text="Chest Size" name="chestsizefoldout" class="input-value-foldout">
+            <ui:IntegerField name="chestsizewidthfield" label="Width" class="input-value-child" />
+            <ui:IntegerField label="Height" value="0" name="chestsizeheightfield" class="input-value-child" />
+        </ui:Foldout>
+        <ui:Foldout text="Leg Size" name="legsizefoldout" class="input-value-foldout">
+            <ui:IntegerField name="chestizewidthfield" label="Width" class="input-value-child" />
+            <ui:IntegerField label="Height" value="0" name="chestsizeheightfield" class="input-value-child" />
+        </ui:Foldout>
+        <ui:Foldout text="Feet Size" name="feetsizefoldout" class="input-value-foldout">
+            <ui:IntegerField name="feetsizewidthfield" label="Width" class="input-value-child" />
+            <ui:IntegerField label="Height" value="0" name="feetsizeheightfield" class="input-value-child" style="flex-direction: row;" />
+        </ui:Foldout>
+    </ui:VisualElement>
     <ui:TextField picking-mode="Ignore" label="File name" value="filler text" name="filename" style="background-color: rgb(170, 170, 170); color: rgb(0, 0, 0); width: 400px; height: 40px; position: absolute; left: 0; top: 50px; right: 0; bottom: 0; -unity-text-align: upper-center; font-size: 20px; display: none;" />
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SaveBackground" class="utilitybuttonlabel" style="background-color: rgb(51, 51, 51);">
         <ui:Button text="Save Preset" name="savebutton" class="utilitybutton" />
@@ -10,13 +32,16 @@
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ExportBackground" class="utilitybuttonlabel" style="left: 300px; background-color: rgb(51, 51, 51);">
         <ui:Button text="Export" parse-escape-sequences="true" display-tooltip-when-elided="true" name="exportbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
     </ui:Label>
-    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ImportBackground" class="utilitybuttonlabel" style="left: 450px; top: 0; background-color: rgb(51, 51, 51); position: relative;">
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="ImportBackground" class="utilitybuttonlabel" style="left: 450px; background-color: rgb(51, 51, 51);">
         <ui:Foldout text="Import" name="importfoldout" class="utilitybutton" style="position: relative; top: auto; left: 4%; height: 35px; width: 100px;">
             <ui:Button text="Import Head" parse-escape-sequences="true" display-tooltip-when-elided="true" name="importheadbutton" enable-rich-text="false" class="actionbuttons utilitybutton" style="top: 4px; left: -33px;" />
             <ui:Button text="Import Chest" parse-escape-sequences="true" display-tooltip-when-elided="true" name="importchestbutton" enable-rich-text="false" class="actionbuttons utilitybutton" style="top: 4px; left: -33px;" />
             <ui:Button text="Import Legs" parse-escape-sequences="true" display-tooltip-when-elided="true" name="importlegsbutton" enable-rich-text="false" class="actionbuttons utilitybutton" style="top: 4px; left: -33px;" />
             <ui:Button text="Import Feet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="importfeetbutton" enable-rich-text="false" class="actionbuttons utilitybutton" style="top: 4px; left: -33px;" />
         </ui:Foldout>
+    </ui:Label>
+    <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SetSizeBackground" class="utilitybuttonlabel" style="left: 600px; background-color: rgb(51, 51, 51);">
+        <ui:Button text="Set Size" parse-escape-sequences="true" display-tooltip-when-elided="true" name="setsizebutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
     </ui:Label>
     <ui:Label tabindex="-1" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MethodSelectionBackground" class="utilitybuttonlabel" style="left: 0; top: 50px; background-color: rgb(51, 51, 51);">
         <ui:Button text="Method: Move" parse-escape-sequences="true" display-tooltip-when-elided="true" name="methodselectionbutton" enable-rich-text="false" class="actionbuttons utilitybutton" />
@@ -36,8 +61,4 @@
     <ui:Label tabindex="-1" text="Feet" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Feet" class="buttontext listViewMakeUp" style="top: 350px; right: 0; left: 200px; bottom: 0; background-color: rgb(67, 67, 67); color: rgb(255, 255, 255);">
         <ui:ListView name="feetlistview" style="position: absolute; max-height: 1000px; width: 150px; height: 200px; top: 100%; left: 0; background-color: rgba(0, 0, 0, 0.27);" />
     </ui:Label>
-    <ui:VisualElement name="feetdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; height: 50px; left: 800px; top: 525px; width: 125px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 284px; bottom: 87px;" />
-    <ui:VisualElement name="legdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; height: 200px; left: 800px; top: 325px; width: 125px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 283px; bottom: 137px;" />
-    <ui:VisualElement name="chestdisplay" class="imagedisplays imagebackgroundcolourTEST" style="flex-grow: 1; left: 760px; top: 125px; width: 200px; height: 200px; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; right: 243px; bottom: 356px;" />
-    <ui:VisualElement name="headdisplay" class="imagedisplays imagebackgroundcolourTEST" style="left: 800px; background-image: none; width: 125px; height: 125px; position: absolute; background-color: rgba(0, 0, 0, 0); border-top-width: 3px; border-right-width: 3px; border-bottom-width: 3px; border-left-width: 3px; top: 0; right: 277px; bottom: 526px;" />
 </ui:UXML>
