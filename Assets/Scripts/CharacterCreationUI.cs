@@ -101,7 +101,6 @@ public class CharacterCreationUI : MonoBehaviour
         feetDisplay = root.Q<VisualElement>("feetdisplay");
         setImageSizeDisplay = root.Q<VisualElement>("setimagesizedisplay");
 
-
         headListView = root.Q<ListView>("headlistview");
         chestListView = root.Q<ListView>("chestlistview");
         legListView = root.Q<ListView>("leglistview");
@@ -151,17 +150,14 @@ public class CharacterCreationUI : MonoBehaviour
         legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legName);
         feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
 
-        headWidthField.RegisterValueChangedCallback(OnHeadSizeChanged);
-        headHeightField.RegisterValueChangedCallback(OnHeadSizeChanged);
-
-        chestWidthField.RegisterValueChangedCallback(OnChestSizeChanged);
-        chestHeightField.RegisterValueChangedCallback(OnChestSizeChanged);
-
-        legWidthField.RegisterValueChangedCallback(OnLegSizeChanged);
-        legHeightField.RegisterValueChangedCallback(OnLegSizeChanged);
-
-        feetWidthField.RegisterValueChangedCallback(OnFeetSizeChanged);
-        feetHeightField.RegisterValueChangedCallback(OnFeetSizeChanged);
+        headWidthField.RegisterValueChangedCallback(evt => (currHeadWidth, currHeadHeight) = OnSizeChanged(evt, headDisplay, headWidthField, headHeightField, currHeadWidth, currHeadHeight));
+        headHeightField.RegisterValueChangedCallback(evt => (currHeadWidth, currHeadHeight) = OnSizeChanged(evt, headDisplay, headWidthField, headHeightField, currHeadWidth, currHeadHeight));
+        chestWidthField.RegisterValueChangedCallback(evt => (currChestWidth, currChestHeight) = OnSizeChanged(evt, chestDisplay, chestWidthField, chestHeightField, currChestWidth, currChestHeight));
+        chestHeightField.RegisterValueChangedCallback(evt => (currChestWidth, currChestHeight) = OnSizeChanged(evt, chestDisplay, chestWidthField, chestHeightField, currChestWidth, currChestHeight));
+        legWidthField.RegisterValueChangedCallback(evt => (currLegWidth, currLegHeight) = OnSizeChanged(evt, legDisplay, legWidthField, legHeightField, currLegWidth, currLegHeight));
+        legHeightField.RegisterValueChangedCallback(evt => (currLegWidth, currLegHeight) = OnSizeChanged(evt, legDisplay, legWidthField, legHeightField, currLegWidth, currLegHeight));
+        feetWidthField.RegisterValueChangedCallback(evt => (currFeetWidth, currFeetHeight) = OnSizeChanged(evt, feetDisplay, feetWidthField, feetHeightField, currFeetWidth, currFeetHeight));
+        feetHeightField.RegisterValueChangedCallback(evt => (currFeetWidth, currFeetHeight) = OnSizeChanged(evt, feetDisplay, feetWidthField, feetHeightField, currFeetWidth, currFeetHeight));
 
         #endregion
     }
@@ -311,6 +307,31 @@ public class CharacterCreationUI : MonoBehaviour
         SetImage(visElem, sprites, name);
     }
 
+    private (int width, int height) OnSizeChanged(ChangeEvent<int> evt, VisualElement element, IntegerField widthField, IntegerField heightField, int currWidth, int currHeight)
+    {
+
+        if (evt.target == headWidthField)
+        {
+            int newWidth = evt.newValue;
+            UpdateSize(element, newWidth, currHeight);
+            return (newWidth, currHeight);
+        }
+        if (evt.target == headHeightField)
+        {
+            int newHeight = evt.newValue;
+            UpdateSize(element, currWidth, newHeight);
+            return (currWidth, newHeight);
+        }
+
+        return (currWidth, currHeight);
+    }
+
+    private void UpdateSize(VisualElement element, int width, int height)
+    {
+        element.style.width = width;
+        element.style.height = height;
+    }
+
     public void RebuildListView()
     {
         headListView.Rebuild();
@@ -341,93 +362,6 @@ public class CharacterCreationUI : MonoBehaviour
         var texture = spriteList[index];
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
-
-    #region SizeChangeCallbacks
-
-    private void OnHeadSizeChanged(ChangeEvent<int> evt)
-    {
-
-        if (evt.target == headWidthField)
-        {
-            currHeadWidth = evt.newValue;
-        }
-        if (evt.target == headHeightField)
-        {
-            currHeadHeight = evt.newValue;
-        }
-
-        UpdateHeadSize(currHeadWidth, currHeadHeight);
-    }
-
-    private void UpdateHeadSize(int width, int height)
-    {
-        headDisplay.style.width = width;
-        headDisplay.style.height = height;
-    }
-
-    private void OnChestSizeChanged(ChangeEvent<int> evt)
-    {
-
-        if (evt.target == chestWidthField)
-        {
-            currChestWidth = evt.newValue;
-        }
-        if (evt.target == chestHeightField)
-        {
-            currChestHeight = evt.newValue;
-        }
-
-        UpdateChestSize(currChestWidth, currChestHeight);
-    }
-
-    private void UpdateChestSize(int width, int height)
-    {
-        chestDisplay.style.width = width;
-        chestDisplay.style.height = height;
-    }
-
-    private void OnLegSizeChanged(ChangeEvent<int> evt)
-    {
-
-        if (evt.target == legWidthField)
-        {
-            currLegWidth = evt.newValue;
-        }
-        if (evt.target == legHeightField)
-        {
-            currLegHeight = evt.newValue;
-        }
-
-        UpdateLegSize(currLegWidth, currLegHeight);
-    }
-
-    private void UpdateLegSize(int width, int height)
-    {
-        legDisplay.style.width = width;
-        legDisplay.style.height = height;
-    }
-
-    private void OnFeetSizeChanged(ChangeEvent<int> evt)
-    {
-
-        if (evt.target == feetWidthField)
-        {
-            currFeetWidth = evt.newValue;
-        }
-        if (evt.target == feetHeightField)
-        {
-            currFeetHeight = evt.newValue;
-        }
-
-        UpdateFeetSize(currFeetWidth, currFeetHeight);
-    }
-
-    private void UpdateFeetSize(int width, int height)
-    {
-        legDisplay.style.width = width;
-        legDisplay.style.height = height;
-    }
-    #endregion
 
     #region ButtonActions
 
