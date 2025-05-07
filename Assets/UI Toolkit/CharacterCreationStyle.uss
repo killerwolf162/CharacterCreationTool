@@ -74,3 +74,38 @@
     justify-content: center;
     -unity-font: url("project://database/Assets/Fonts/Poppins-Bold.ttf?fileID=12800000&guid=d56894b192e242b46aecea1efedbde88&type=3#Poppins-Bold");
 }
+
+.input-value-foldout {
+    flex-shrink: 0;
+    background-color: rgb(68, 68, 68);
+    color: rgb(255, 255, 255);
+}
+
+.input-value-child {
+    background-color: rgb(68, 68, 68);
+    width: 200px;
+    align-self: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.input-value-child:hover {
+    background-color: rgb(34, 34, 34);
+    border-left-color: rgb(34, 34, 34);
+    border-right-color: rgb(34, 34, 34);
+    border-top-color: rgb(34, 34, 34);
+    border-bottom-color: rgb(34, 34, 34);
+}
+
+.input-value-child:focus {
+    background-color: rgb(34, 34, 34);
+    border-left-color: rgb(34, 34, 34);
+    border-right-color: rgb(34, 34, 34);
+    border-top-color: rgb(34, 34, 34);
+    border-bottom-color: rgb(34, 34, 34);
+    color: rgb(51, 51, 51);
+}
+
+.input-value-child > .unity-base-field__input {
+    background-color: rgb(68, 68, 68);
+}

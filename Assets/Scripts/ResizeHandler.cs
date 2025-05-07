@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +10,8 @@ public class ResizeHandler : PointerManipulator
     private Vector2 startPanelSize;
     private Vector2 startPanelPosition;
     private bool enabled;
+
+    public Action<int, int> OnResizeUpdateUI;
 
     public ResizeHandler(VisualElement target)
     {
@@ -71,6 +74,11 @@ public class ResizeHandler : PointerManipulator
             target.style.width = Mathf.Max(50, startPanelSize.x + delta.x);
             target.style.height = Mathf.Max(50, startPanelSize.y + delta.y);
         }
+
+        int intermitWidth = Mathf.RoundToInt(target.resolvedStyle.width);
+        int intermitHeight = Mathf.RoundToInt(target.resolvedStyle.height);
+
+        OnResizeUpdateUI?.Invoke(intermitWidth, intermitHeight);
     }
 
     private void OnEndResize(MouseUpEvent evt)
@@ -80,7 +88,11 @@ public class ResizeHandler : PointerManipulator
 
         enabled = false;
         target.ReleaseMouse();
-
         evt.StopPropagation();
+
+        int finalWidth = Mathf.RoundToInt(target.resolvedStyle.width);
+        int finalHeight = Mathf.RoundToInt(target.resolvedStyle.height);
+
+        OnResizeUpdateUI?.Invoke(finalWidth, finalHeight);
     }
 }

@@ -1,10 +1,12 @@
-﻿[System.Serializable]
+﻿using System;
+using System.Collections;
+
+[System.Serializable]
 public class ImagePreset
 {
-    public string headName;
-    public string chestName;
-    public string legName;
-    public string feetName;
+    public string imageName;
+    public int xPos, yPos;
+    public int width, height;
 
     public ImagePreset()
     {

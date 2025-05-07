@@ -9,27 +9,35 @@ using SimpleFileBrowser;
 public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] public string headName, chestName, legName, feetName;
+    public TextField fileName { get; private set; }
+    public ListView headListView, chestListView, legListView, feetListView;
 
-    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
+    public List<string> imageNames = new List<string>();
+    public List<VisualElement> displayList = new List<VisualElement>();
+
     [SerializeField] private List<Sprite> headImages = new List<Sprite>();
     [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
     [SerializeField] private List<Sprite> legImages = new List<Sprite>();
     [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
-    private List<DragManipulator> dragManList = new List<DragManipulator>();
+    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
+
+    private List<DragHandler> dragHandList = new List<DragHandler>();
     private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
-    public TextField fileName { get; private set; }
-    public ListView headListView, chestListView, legListView, feetListView;
-
-    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay;
-    private Button exportButton, importButton, loadButton, saveButton, methodButton, scaleModeButton;
+    private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay, setImageSizeDisplay;
+    private Button exportButton, importHeadButton, importChestButton, importLegsButton, importFeetButton, loadButton, saveButton, methodButton, scaleModeButton, setImageSizeButton;
+    private Foldout importFoldout, headSizeFoldout, chestSizeFoldout, legSizeFoldout, feetSizeFoldout;
+    private IntegerField headWidthField, headHeightField, chestWidthField, chestHeightField, legWidthField, legHeightField, feetWidthField, feetHeightField;
     private Texture2D ImageToExport;
+
+    private int currHeadWidth, currHeadHeight, currChestWidth, currChestHeight, currLegWidth, currLegHeight, currFeetWidth, currFeetHeight;
 
     private ImageLoader loader;
 
     private Method currMethod = Method.drag;
     private ResizeMode currMode = ResizeMode.topLeft;
 
+    private bool isInitialized = false;
     private enum Method
     {
         drag,
@@ -63,53 +71,78 @@ public class CharacterCreationUI : MonoBehaviour
         #endregion
 
         #region UI Init
-
         var root = GetComponent<UIDocument>().rootVisualElement;
 
         exportButton = root.Q<Button>("exportbutton");
-        importButton = root.Q<Button>("importbutton");
+        importHeadButton = root.Q<Button>("importheadbutton");
+        importChestButton = root.Q<Button>("importchestbutton");
+        importLegsButton = root.Q<Button>("importlegsbutton");
+        importFeetButton = root.Q<Button>("importfeetbutton");
         loadButton = root.Q<Button>("loadbutton");
         saveButton = root.Q<Button>("savebutton");
         methodButton = root.Q<Button>("methodselectionbutton");
         scaleModeButton = root.Q<Button>("scalemodeselectionbutton");
+        setImageSizeButton = root.Q<Button>("setsizebutton");
+
+        importFoldout = root.Q<Foldout>("importfoldout");
+        importFoldout.value = false;
+        headSizeFoldout = root.Q<Foldout>("headsizefoldout");
+        headSizeFoldout.value = false;
+        chestSizeFoldout = root.Q<Foldout>("chestsizefoldout");
+        chestSizeFoldout.value = false;
+        legSizeFoldout = root.Q<Foldout>("legsizefoldout");
+        legSizeFoldout.value = false;
+        feetSizeFoldout = root.Q<Foldout>("feetsizefoldout");
+        feetSizeFoldout.value = false;
 
         headDisplay = root.Q<VisualElement>("headdisplay");
         chestDisplay = root.Q<VisualElement>("chestdisplay");
         legDisplay = root.Q<VisualElement>("legdisplay");
         feetDisplay = root.Q<VisualElement>("feetdisplay");
+        setImageSizeDisplay = root.Q<VisualElement>("setimagesizedisplay");
+
 
         headListView = root.Q<ListView>("headlistview");
         chestListView = root.Q<ListView>("chestlistview");
         legListView = root.Q<ListView>("leglistview");
         feetListView = root.Q<ListView>("feetlistview");
 
-        dragManList.Add(new DragManipulator(headDisplay));
-        dragManList.Add(new DragManipulator(chestDisplay));
-        dragManList.Add(new DragManipulator(legDisplay));
-        dragManList.Add(new DragManipulator(feetDisplay));
+        headWidthField = root.Q<IntegerField>("headsizewidthfield");
+        headHeightField = root.Q<IntegerField>("headsizeheightfield");
+        chestWidthField = root.Q<IntegerField>("chestsizewidthfield");
+        chestHeightField = root.Q<IntegerField>("chestsizeheightfield");
+        legWidthField = root.Q<IntegerField>("legsizewidthfield");
+        legHeightField = root.Q<IntegerField>("legsizeheightfield");
+        feetWidthField = root.Q<IntegerField>("feetsizewidthfield");
+        feetHeightField = root.Q<IntegerField>("feetsizeheightfield");
 
-        resHandList.Add(new ResizeHandler(headDisplay));
-        resHandList.Add(new ResizeHandler(chestDisplay));
-        resHandList.Add(new ResizeHandler(legDisplay));
-        resHandList.Add(new ResizeHandler(feetDisplay));
+        setImageSizeDisplay.style.visibility = Visibility.Hidden;
 
-        headDisplay.AddManipulator(dragManList[0]);
-        headDisplay.AddManipulator(resHandList[0]);
-        chestDisplay.AddManipulator(dragManList[1]);
-        chestDisplay.AddManipulator(resHandList[1]);
-        legDisplay.AddManipulator(dragManList[2]);
-        legDisplay.AddManipulator(resHandList[2]);
-        feetDisplay.AddManipulator(dragManList[3]);
-        feetDisplay.AddManipulator(resHandList[3]);
+        dragHandList.Add(SetupDragHandler(headDisplay));
+        dragHandList.Add(SetupDragHandler(chestDisplay));
+        dragHandList.Add(SetupDragHandler(legDisplay));
+        dragHandList.Add(SetupDragHandler(feetDisplay));
+        SetupDragHandler(setImageSizeDisplay);
+
+        resHandList.Add(SetupResizeHandler(headDisplay, headWidthField, headHeightField, currHeadWidth, currHeadHeight));
+        resHandList.Add(SetupResizeHandler(chestDisplay, chestWidthField, chestHeightField, currChestWidth, currChestHeight));
+        resHandList.Add(SetupResizeHandler(legDisplay, legWidthField, legHeightField, currLegWidth, currLegHeight));
+        resHandList.Add(SetupResizeHandler(feetDisplay, feetWidthField, feetHeightField, currFeetWidth, currFeetHeight));
+
+        setImageSizeDisplay.AddManipulator(new DragHandler(setImageSizeDisplay));
 
         fileName = root.Q<TextField>("filename");
 
         exportButton.clicked += exportButtonClicked;
         loadButton.clicked += loadButtonClicked;
         saveButton.clicked += saveButtonClicked;
-        importButton.clicked += importButtonClicked;
+        importHeadButton.clicked += importHeadButtonClicked;
+        importChestButton.clicked += importChestButtonClicked;
+        importLegsButton.clicked += importLegsButtonClicked;
+        importFeetButton.clicked += importFeetButtonClicked;
         methodButton.clicked += methodButtonClicked;
         scaleModeButton.clicked += scaleModeButtonClicked;
+        setImageSizeButton.clicked += setImageSizeButtonClicked;
 
         scaleModeButton.parent.style.display = DisplayStyle.None;
 
@@ -118,8 +151,19 @@ public class CharacterCreationUI : MonoBehaviour
         legListView.selectionChanged += (items) => OnSelectionChanged(legListView, legImages, legDisplay, ref legName);
         feetListView.selectionChanged += (items) => OnSelectionChanged(feetListView, feetImages, feetDisplay, ref feetName);
 
-        #endregion
+        headWidthField.RegisterValueChangedCallback(OnHeadSizeChanged);
+        headHeightField.RegisterValueChangedCallback(OnHeadSizeChanged);
 
+        chestWidthField.RegisterValueChangedCallback(OnChestSizeChanged);
+        chestHeightField.RegisterValueChangedCallback(OnChestSizeChanged);
+
+        legWidthField.RegisterValueChangedCallback(OnLegSizeChanged);
+        legHeightField.RegisterValueChangedCallback(OnLegSizeChanged);
+
+        feetWidthField.RegisterValueChangedCallback(OnFeetSizeChanged);
+        feetHeightField.RegisterValueChangedCallback(OnFeetSizeChanged);
+
+        #endregion
     }
 
     private void Start()
@@ -151,23 +195,77 @@ public class CharacterCreationUI : MonoBehaviour
         InitializeListView(chestListView, chestImages);
         InitializeListView(legListView, legImages);
         InitializeListView(feetListView, feetImages);
+
+        imageNames.AddRange(new[] { headName, chestName, legName, feetName });
+        displayList.AddRange(new[] { headDisplay, chestDisplay, legDisplay, feetDisplay });
         #endregion
+
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             methodButtonClicked();
         }
-        if(Input.GetKeyDown(KeyCode.LeftAlt) && currMethod == Method.scale)
+        if (Input.GetKeyDown(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
-        if(Input.GetKeyUp(KeyCode.LeftAlt) && currMethod == Method.scale)
+        if (Input.GetKeyUp(KeyCode.LeftAlt) && currMethod == Method.scale)
         {
             scaleModeButtonClicked();
         }
+    }
+
+    private void LateUpdate()
+    {
+        InitialzeUI();
+    }
+
+    private void InitialzeUI()
+    {
+        if (isInitialized != true)
+        {
+            headWidthField.value = Mathf.RoundToInt(headDisplay.resolvedStyle.width);
+            headHeightField.value = Mathf.RoundToInt(headDisplay.resolvedStyle.height);
+            chestWidthField.value = Mathf.RoundToInt(chestDisplay.resolvedStyle.width);
+            chestHeightField.value = Mathf.RoundToInt(chestDisplay.resolvedStyle.height);
+            legWidthField.value = Mathf.RoundToInt(legDisplay.resolvedStyle.width);
+            legHeightField.value = Mathf.RoundToInt(legDisplay.resolvedStyle.height);
+            feetWidthField.value = Mathf.RoundToInt(feetDisplay.resolvedStyle.width);
+            feetHeightField.value = Mathf.RoundToInt(feetDisplay.resolvedStyle.height);
+
+            isInitialized = true;
+        }
+    }
+
+    private ResizeHandler SetupResizeHandler(VisualElement element, IntegerField widthField, IntegerField heightField, int currWidth, int currHeight)
+    {
+        ResizeHandler resizer = new ResizeHandler(element);
+        element.AddManipulator(resizer);
+
+        resizer.OnResizeUpdateUI += (width, height) =>
+        {
+            element.schedule.Execute(() =>
+            {
+                widthField.SetValueWithoutNotify(width);
+                heightField.SetValueWithoutNotify(height);
+
+                currWidth = width;
+                currHeight = height;
+            });
+        };
+
+        return resizer;
+    }
+
+    private DragHandler SetupDragHandler(VisualElement element)
+    {
+        DragHandler dragger = new DragHandler(element);
+        element.AddManipulator(dragger);
+
+        return dragger;
     }
 
     private void InitializeListView(ListView listView, List<Sprite> sprites)
@@ -234,7 +332,7 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    private void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
+    public void SetImage(VisualElement visElement, List<Sprite> spriteList, string imageName)
     {
         var index = spriteList.FindIndex(0, spriteList.Count, s => s.name == imageName);
         if (spriteList[index] == null)
@@ -244,13 +342,100 @@ public class CharacterCreationUI : MonoBehaviour
         visElement.style.backgroundImage = new StyleBackground(texture);
     }
 
+    #region SizeChangeCallbacks
+
+    private void OnHeadSizeChanged(ChangeEvent<int> evt)
+    {
+
+        if (evt.target == headWidthField)
+        {
+            currHeadWidth = evt.newValue;
+        }
+        if (evt.target == headHeightField)
+        {
+            currHeadHeight = evt.newValue;
+        }
+
+        UpdateHeadSize(currHeadWidth, currHeadHeight);
+    }
+
+    private void UpdateHeadSize(int width, int height)
+    {
+        headDisplay.style.width = width;
+        headDisplay.style.height = height;
+    }
+
+    private void OnChestSizeChanged(ChangeEvent<int> evt)
+    {
+
+        if (evt.target == chestWidthField)
+        {
+            currChestWidth = evt.newValue;
+        }
+        if (evt.target == chestHeightField)
+        {
+            currChestHeight = evt.newValue;
+        }
+
+        UpdateChestSize(currChestWidth, currChestHeight);
+    }
+
+    private void UpdateChestSize(int width, int height)
+    {
+        chestDisplay.style.width = width;
+        chestDisplay.style.height = height;
+    }
+
+    private void OnLegSizeChanged(ChangeEvent<int> evt)
+    {
+
+        if (evt.target == legWidthField)
+        {
+            currLegWidth = evt.newValue;
+        }
+        if (evt.target == legHeightField)
+        {
+            currLegHeight = evt.newValue;
+        }
+
+        UpdateLegSize(currLegWidth, currLegHeight);
+    }
+
+    private void UpdateLegSize(int width, int height)
+    {
+        legDisplay.style.width = width;
+        legDisplay.style.height = height;
+    }
+
+    private void OnFeetSizeChanged(ChangeEvent<int> evt)
+    {
+
+        if (evt.target == feetWidthField)
+        {
+            currFeetWidth = evt.newValue;
+        }
+        if (evt.target == feetHeightField)
+        {
+            currFeetHeight = evt.newValue;
+        }
+
+        UpdateFeetSize(currFeetWidth, currFeetHeight);
+    }
+
+    private void UpdateFeetSize(int width, int height)
+    {
+        legDisplay.style.width = width;
+        legDisplay.style.height = height;
+    }
+    #endregion
+
     #region ButtonActions
 
     private void methodButtonClicked() // swap functionality of mouse 0 -> drag to scale and reverse
     {
         if (currMethod == Method.drag)
         {
-            foreach(var dragMan in dragManList)
+            foreach (var dragMan in dragHandList)
                 dragMan.selected = false;
             foreach (var reszHand in resHandList)
                 reszHand.selected = true;
@@ -261,9 +446,9 @@ public class CharacterCreationUI : MonoBehaviour
 
             return;
         }
-        if(currMethod == Method.scale)
+        if (currMethod == Method.scale)
         {
-            foreach (var dragMan in dragManList)
+            foreach (var dragMan in dragHandList)
                 dragMan.selected = true;
             foreach (var reszHand in resHandList)
                 reszHand.selected = false;
@@ -274,9 +459,17 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
+    private void setImageSizeButtonClicked()
+    {
+        if (setImageSizeDisplay.style.visibility == Visibility.Hidden)
+            setImageSizeDisplay.style.visibility = Visibility.Visible;
+        else if (setImageSizeDisplay.style.visibility == Visibility.Visible)
+            setImageSizeDisplay.style.visibility = Visibility.Hidden;
+    }
+
     private void scaleModeButtonClicked()
     {
-        if(currMode == ResizeMode.topLeft)
+        if (currMode == ResizeMode.topLeft)
         {
             foreach (var reszHand in resHandList)
                 reszHand.altPressed = true;
@@ -306,9 +499,24 @@ public class CharacterCreationUI : MonoBehaviour
         StartCoroutine(ShowExportDialogCoroutine());
     }
 
-    private void importButtonClicked()
+    private void importHeadButtonClicked()
     {
-        StartCoroutine(ShowImportDialogCoroutine());
+        StartCoroutine(ShowImportDialogCoroutine("Heads"));
+    }
+
+    private void importChestButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Chest"));
+    }
+
+    private void importLegsButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Legs"));
+    }
+
+    private void importFeetButtonClicked()
+    {
+        StartCoroutine(ShowImportDialogCoroutine("Feet"));
     }
 
     private void loadButtonClicked()
@@ -318,6 +526,11 @@ public class CharacterCreationUI : MonoBehaviour
 
     private void saveButtonClicked()
     {
+        imageNames[0] = headName;
+        imageNames[1] = chestName;
+        imageNames[2] = legName;
+        imageNames[3] = feetName;
+
         string fullPath = Path.Combine(Application.persistentDataPath, "Presets");
         if (!Directory.Exists(fullPath))
         {
@@ -350,7 +563,7 @@ public class CharacterCreationUI : MonoBehaviour
         }
     }
 
-    private IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths)
+    private IEnumerator ShowSelectFolderDialogCoroutine(string[] filePaths, string folderName)
     {
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Folders, false, Application.persistentDataPath, null, "Select folder", "Import");
         Debug.Log(FileBrowser.Success);
@@ -359,7 +572,7 @@ public class CharacterCreationUI : MonoBehaviour
             ImportSelectedImages(FileBrowser.Result[0], filePaths);
     }
 
-    private IEnumerator ShowImportDialogCoroutine()
+    private IEnumerator ShowImportDialogCoroutine(string folderName)
     {
         FileBrowser.SetDefaultFilter(".png");
         yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.Files, true, "C:\\", null, "Select Files", "Select");
@@ -367,7 +580,14 @@ public class CharacterCreationUI : MonoBehaviour
         Debug.Log(FileBrowser.Success);
 
         if (FileBrowser.Success)
-            StartCoroutine(ShowSelectFolderDialogCoroutine(FileBrowser.Result));
+        {
+            Debug.Log($"Foldername: " + folderName);
+            foreach (var item in FileBrowser.Result)
+            {
+                Debug.Log($"item name: " + item);
+            }
+            ImportSelectedImages(folderName, FileBrowser.Result);
+        }
     }
 
     private IEnumerator ShowLoadDialogCoroutine()
@@ -380,10 +600,17 @@ public class CharacterCreationUI : MonoBehaviour
         if (FileBrowser.Success)
         {
             PresetLoader.LoadImagePreset(this, FileBrowser.Result[0]);
+            headName = imageNames[0]; // reset images to be loaded correctly
+            chestName = imageNames[1];
+            legName = imageNames[2];
+            feetName = imageNames[3];
             SetImage(headDisplay, headImages, headName);
             SetImage(chestDisplay, chestImages, chestName);
             SetImage(legDisplay, legImages, legName);
             SetImage(feetDisplay, feetImages, feetName);
+
+            // update curr variables so UI gets updated
+            // currHeadWidth = headDisplay.resolvedstyle.width; etc.
         }
     }
 
@@ -402,7 +629,10 @@ public class CharacterCreationUI : MonoBehaviour
         for (int i = 0; i < selectedFiles.Length; i++)
         {
             string filePath = selectedFiles[i];
-            string destinationPath = Path.Combine(selectedFolder, FileBrowserHelpers.GetFilename(filePath));
+            string root = Path.Combine(Application.persistentDataPath, selectedFolder);
+            string destinationPath = Path.Combine(root, FileBrowserHelpers.GetFilename(filePath));
+            Debug.Log($"destinationPath: " + destinationPath);
+
             FileBrowserHelpers.CopyFile(filePath, destinationPath);
         }
         loader.LoadAllImages();
