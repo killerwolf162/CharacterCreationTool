@@ -14,8 +14,8 @@
             <ui:IntegerField label="Height" value="0" name="chestsizeheightfield" class="input-value-child" />
         </ui:Foldout>
         <ui:Foldout text="Leg Size" name="legsizefoldout" class="input-value-foldout">
-            <ui:IntegerField name="chestizewidthfield" label="Width" class="input-value-child" />
-            <ui:IntegerField label="Height" value="0" name="chestsizeheightfield" class="input-value-child" />
+            <ui:IntegerField name="legsizewidthfield" label="Width" class="input-value-child" />
+            <ui:IntegerField label="Height" value="0" name="legsizeheightfield" class="input-value-child" />
         </ui:Foldout>
         <ui:Foldout text="Feet Size" name="feetsizefoldout" class="input-value-foldout">
             <ui:IntegerField name="feetsizewidthfield" label="Width" class="input-value-child" />
