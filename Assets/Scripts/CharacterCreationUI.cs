@@ -9,18 +9,18 @@ using SimpleFileBrowser;
 public class CharacterCreationUI : MonoBehaviour
 {
     [SerializeField] public string headName, chestName, legName, feetName;
-    public TextField fileName { get; private set; }
-    public ListView headListView, chestListView, legListView, feetListView;
 
     public List<string> imageNames = new List<string>();
     public List<VisualElement> displayList = new List<VisualElement>();
 
-    [SerializeField] private List<Sprite> headImages = new List<Sprite>();
-    [SerializeField] private List<Sprite> chestImages = new List<Sprite>();
-    [SerializeField] private List<Sprite> legImages = new List<Sprite>();
-    [SerializeField] private List<Sprite> feetImages = new List<Sprite>();
-    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
+    public TextField fileName { get; private set; }
+    public ListView headListView, chestListView, legListView, feetListView;
 
+    private List<Sprite> headImages = new List<Sprite>();
+    private List<Sprite> chestImages = new List<Sprite>();
+    private List<Sprite> legImages = new List<Sprite>();
+    private List<Sprite> feetImages = new List<Sprite>();
+    private List<List<Sprite>> imageCategoryList = new List<List<Sprite>>();
     private List<DragHandler> dragHandList = new List<DragHandler>();
     private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
@@ -29,10 +29,9 @@ public class CharacterCreationUI : MonoBehaviour
     private Foldout importFoldout, headSizeFoldout, chestSizeFoldout, legSizeFoldout, feetSizeFoldout;
     private IntegerField headWidthField, headHeightField, chestWidthField, chestHeightField, legWidthField, legHeightField, feetWidthField, feetHeightField;
     private Texture2D ImageToExport;
+    private ImageLoader loader;
 
     private int currHeadWidth, currHeadHeight, currChestWidth, currChestHeight, currLegWidth, currLegHeight, currFeetWidth, currFeetHeight;
-
-    private ImageLoader loader;
 
     private Method currMethod = Method.drag;
     private ResizeMode currMode = ResizeMode.topLeft;
@@ -310,13 +309,13 @@ public class CharacterCreationUI : MonoBehaviour
     private (int width, int height) OnSizeChanged(ChangeEvent<int> evt, VisualElement element, IntegerField widthField, IntegerField heightField, int currWidth, int currHeight)
     {
 
-        if (evt.target == headWidthField)
+        if (evt.target == widthField)
         {
             int newWidth = evt.newValue;
             UpdateSize(element, newWidth, currHeight);
             return (newWidth, currHeight);
         }
-        if (evt.target == headHeightField)
+        if (evt.target == heightField)
         {
             int newHeight = evt.newValue;
             UpdateSize(element, currWidth, newHeight);
