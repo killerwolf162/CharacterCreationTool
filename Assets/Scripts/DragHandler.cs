@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -5,12 +6,14 @@ public class DragHandler : PointerManipulator
 {
     public bool selected;
     private Vector2 startPosition;
+    private Stack<(Vector2 endPosition, VisualElement element)> oldPositions;
     private Vector3 pointerStartPosition;
     private bool enabled;
 
-    public DragHandler(VisualElement target)
+    public DragHandler(VisualElement target, Stack<(Vector2, VisualElement)> oldPositions = null)
     {
         this.target = target;
+        this.oldPositions = oldPositions ?? new Stack<(Vector2, VisualElement)>();
         selected = true;
     }
 
@@ -32,13 +35,13 @@ public class DragHandler : PointerManipulator
 
     private void PointerDownHandler(PointerDownEvent evt)
     {
-        if(evt.button == 0 && selected == true)
+        if (evt.button == 0 && selected == true)
         {
             startPosition = target.transform.position;
-            pointerStartPosition = evt.position;
             target.CapturePointer(evt.pointerId);
+            pointerStartPosition = evt.position;
             enabled = true;
-        }     
+        }
     }
 
     private void PointerMoveHandler(PointerMoveEvent evt)
@@ -46,7 +49,9 @@ public class DragHandler : PointerManipulator
         if (enabled && target.HasPointerCapture(evt.pointerId))
         {
             Vector3 pointerDelta = evt.position - pointerStartPosition;
-            target.transform.position = startPosition + (Vector2)pointerDelta;
+            var endPos = startPosition + (Vector2)pointerDelta;
+            target.transform.position = endPos;
+
         }
     }
 
@@ -54,6 +59,7 @@ public class DragHandler : PointerManipulator
     {
         if (enabled && target.HasPointerCapture(evt.pointerId))
         {
+            oldPositions.Push((startPosition, target));
             target.ReleasePointer(evt.pointerId);
         }
     }

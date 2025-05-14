@@ -24,6 +24,9 @@ public class CharacterCreationUI : MonoBehaviour
     private List<DragHandler> dragHandList = new List<DragHandler>();
     private List<ResizeHandler> resHandList = new List<ResizeHandler>();
 
+
+    [SerializeField] public Stack<(Vector2 position, VisualElement element)> lastAction = new Stack<(Vector2 position, VisualElement element)>();
+
     private VisualElement headDisplay, chestDisplay, legDisplay, feetDisplay, setImageSizeDisplay;
     private Button exportButton, importHeadButton, importChestButton, importLegsButton, importFeetButton, loadButton, saveButton, methodButton, scaleModeButton, setImageSizeButton;
     private Foldout importFoldout, headSizeFoldout, chestSizeFoldout, legSizeFoldout, feetSizeFoldout;
@@ -116,11 +119,11 @@ public class CharacterCreationUI : MonoBehaviour
 
         setImageSizeDisplay.style.visibility = Visibility.Hidden;
 
-        dragHandList.Add(SetupDragHandler(headDisplay));
-        dragHandList.Add(SetupDragHandler(chestDisplay));
-        dragHandList.Add(SetupDragHandler(legDisplay));
-        dragHandList.Add(SetupDragHandler(feetDisplay));
-        SetupDragHandler(setImageSizeDisplay);
+        dragHandList.Add(SetupDragHandler(headDisplay, lastAction));
+        dragHandList.Add(SetupDragHandler(chestDisplay, lastAction));
+        dragHandList.Add(SetupDragHandler(legDisplay, lastAction));
+        dragHandList.Add(SetupDragHandler(feetDisplay, lastAction));
+        SetupDragHandler(setImageSizeDisplay, null);
 
         resHandList.Add(SetupResizeHandler(headDisplay, headWidthField, headHeightField, currHeadWidth, currHeadHeight));
         resHandList.Add(SetupResizeHandler(chestDisplay, chestWidthField, chestHeightField, currChestWidth, currChestHeight));
@@ -211,6 +214,10 @@ public class CharacterCreationUI : MonoBehaviour
         {
             scaleModeButtonClicked();
         }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            undoButtonClicked();
+        }
     }
 
     private void LateUpdate()
@@ -255,9 +262,9 @@ public class CharacterCreationUI : MonoBehaviour
         return resizer;
     }
 
-    private DragHandler SetupDragHandler(VisualElement element)
+    private DragHandler SetupDragHandler(VisualElement element, Stack<(Vector2, VisualElement)> oldPositions)
     {
-        DragHandler dragger = new DragHandler(element);
+        DragHandler dragger = new DragHandler(element, oldPositions);
         element.AddManipulator(dragger);
 
         return dragger;
@@ -364,6 +371,14 @@ public class CharacterCreationUI : MonoBehaviour
 
     #region ButtonActions
 
+    private void undoButtonClicked()
+    {
+        if(lastAction.Count > 0)
+        {
+            (Vector2 lastPos, VisualElement element) = lastAction.Pop();
+            element.transform.position = lastPos;
+        }    
+    }
     private void methodButtonClicked() // swap functionality of mouse 0 -> drag to scale and reverse
     {
         if (currMethod == Method.drag)
