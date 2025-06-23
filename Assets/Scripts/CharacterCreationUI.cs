@@ -214,7 +214,7 @@ public class CharacterCreationUI : MonoBehaviour
         {
             scaleModeButtonClicked();
         }
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.Z))
         {
             undoButtonClicked();
         }
